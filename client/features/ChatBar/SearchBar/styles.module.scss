@@ -1,0 +1,12 @@
+.inputOutline {
+  outline: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease-out;
+
+  &:hover {
+    outline: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  &:focus {
+    outline: 1px solid rgba(255, 255, 255, 1);
+  }
+}
