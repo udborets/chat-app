@@ -12,4 +12,4 @@ const MessageInput: FC = () => {
   )
 }
 
-export default MessageInput
+export default MessageInput;
