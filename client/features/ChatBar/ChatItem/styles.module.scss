@@ -1,0 +1,7 @@
+.bgAnimation {
+  transition: all 0.3s ease-out;
+
+  &:hover {
+    @apply chats-bg-hover;
+  }
+}
