@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .chats-bg {
+    @apply bg-[var(--chats-bg)];
+  }
+
+  .chats-bg-hover {
+    @apply bg-[var(--chats-bg-hover)];
+  }
+
+  .text-main {
+    @apply text-[var(--text-main)];
+  }
+
+  .main-bg {
+    @apply bg-[var(--main-bg)];
+  }
+
+  .color-bg {
+    @apply bg-[var(--color-bg)];
+  }
+}
+
+:root {
+  --main-bg: rgb(23, 23, 23);
+  --text-main: rgb(215, 215, 215);
+  --chats-bg: rgb(41, 41, 41);
+  --color-bg: rgb(179, 31, 247);
+  --chats-bg-hover: rgb(57, 57, 57);
+}
+
 html,
 body,
 #__next {
@@ -9,6 +39,11 @@ body,
   height: 100%;
 }
 
+html {
+  background: var(--main-bg);
+}
+
 #__next {
   display: flex;
+  padding: 0 100px 0 100px;
 }
