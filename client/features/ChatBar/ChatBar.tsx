@@ -6,7 +6,7 @@ import styles from './styles.module.scss';
 
 const ChatBar: FC = () => {
   return (
-    <aside className="flex flex-col gap-4 bg-slate-500 h-full max-w-[400px] w-full p-2">
+    <aside className="flex flex-col gap-4 chats-bg h-full max-w-[400px] w-full p-2 text-main">
       <SearchBar />
       <ul className={`flex flex-col gap-2 overflow-y-scroll ${styles.ChatScrollBar}`}>
         <ChatItem />
