@@ -1,14 +1,16 @@
 import { FC, useRef } from "react"
 
+import styles from './styles.module.scss';
+
 const SearchBar: FC = () => {
   const searchRef = useRef<HTMLInputElement>(null);
   return (
     <input
-      className="w-full h-[50px] bg-slate-300 p-2 text-[1.1rem] rounded-[10px]"
+      className={`${styles.inputOutline} w-full h-[40px] min-h-[40px] main-bg px-5 rounded-[30px]`}
       placeholder="Search..."
       ref={searchRef}
     />
   )
 }
 
-export default SearchBar
+export default SearchBar;
