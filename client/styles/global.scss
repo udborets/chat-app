@@ -49,6 +49,6 @@ html {
 }
 
 #__next {
-  @apply xl:px-[140px];
   display: flex;
+  justify-content: center;
 }
