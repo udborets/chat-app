@@ -1,5 +1,5 @@
 export type ChatItemProps = {
-  id: number;
+  id: string;
   companionAvatar: string;
   companionName: string;
   lastMessage: string;
