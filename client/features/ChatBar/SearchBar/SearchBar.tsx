@@ -1,12 +1,12 @@
 import Image from "next/image";
-import { FC, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
 import crossIconWhite from './assets/crossIconWhite.png';
 import searchIconWhite from './assets/searchIconWhite.png';
-import styles from './styles.module.scss';
 
 const SearchBar: FC = () => {
   const searchRef = useRef<HTMLInputElement>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const focus = () => {
     searchRef.current?.focus();
@@ -16,39 +16,45 @@ const SearchBar: FC = () => {
     searchRef.current?.blur();
     setIsFocused(false);
   }
+  const clearSearchQuery = () => {
+    setSearchQuery('');
+    if (searchRef.current?.value) {
+      searchRef.current.value = '';
+    }
+  }
   return (
     <div
-      onClick={(e) => {
-        focus()
-      }}
-      className={`${styles.searchBar} ${isFocused
+      onClick={focus}
+      className={`duration-200 transition-all ease-out ${isFocused
         ? "outline-[var(--color-bg)] hover:outline-[var(--color-bg)]"
         : "outline-[rgba(255,255,255,0.34)] hover:outline-[rgba(255,255,255,0.62)]"
-        } w-full h-[50px] min-h-[50px] message-bg px-[15px] rounded-[30px] outline-2 outline flex items-center gap-4`}
+        } w-full h-[40px] min-h-[40px] message-bg px-[15px] rounded-[30px] outline-2 outline flex items-center gap-4`}
     >
       <Image
-        className="h-[25px] w-[25px]"
+        className="h-[15px] w-[15px]"
         src={searchIconWhite}
         alt="Search icon"
       />
       <input
-        className="h-full w-full outline-none message-bg text-[1.15rem]"
+        className="h-full w-full outline-none message-bg text-[1rem]"
         onFocus={focus}
         onBlur={blur}
         placeholder="Search..."
         ref={searchRef}
+        onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <Image
-        onClick={() => {
-          if (searchRef.current && searchRef.current.value)
-            searchRef.current.value = '';
-        }}
-        className={`${isFocused
-          ? "opacity-100 rotate-0"
-          : "opacity-0 rotate-90"} hover:bg-slate-800 p-[2px] h-[35px] w-[35px] rounded-[50%] transition-all duration-200`}
-        src={crossIconWhite}
-        alt="Cross icon"
-      />
+      {searchQuery !== ''
+        ? <button
+          onClick={clearSearchQuery}
+          className={` w-fit h-fit p-1 hover:bg-slate-800 transition-all duration-200 rounded-[50%]`}
+        >
+          <Image
+            className={`h-[25px] w-[25px] min-h-[25px] min-w-[25px]`}
+            src={crossIconWhite}
+            alt="Cross icon"
+          />
+        </button>
+        : ''}
     </div>
   )
 }
