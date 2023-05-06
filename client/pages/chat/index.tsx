@@ -214,7 +214,7 @@ const chatProps: ChatProps = {
 
 const ChatPage: FC = () => {
   return (
-    <PageLayout title="Chat" className="max-w-[1000px] w-full h-full flex">
+    <PageLayout title="Chat" className="relative max-w-[1000px] w-full h-full flex">
       <ChatBar {...testChats} />
       <Chat messages={chatProps.messages} />
     </PageLayout>
