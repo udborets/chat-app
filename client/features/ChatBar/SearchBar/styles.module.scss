@@ -1,6 +1,10 @@
-.inputOutline {
+.searchBar {
   outline: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease-out;
+  background-image: url("./assets/searchIconWhite.png");
+  background-repeat: no-repeat;
+  background-position: 95% center;
+  background-size: 25px 25px;
 
   &:hover {
     outline: 1px solid rgba(255, 255, 255, 0.5);
