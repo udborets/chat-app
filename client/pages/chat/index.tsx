@@ -136,7 +136,7 @@ const chatProps: ChatProps = {
     {
       id: Math.random().toString(),
       isOwn: false,
-      text: "skjfs",
+      text: "fowiejf owiejfwe iewojef fjeiwjf hello i was going to the zoo last night and i met a girl that is 10x times higher than me",
       sendingTime: Date.now(),
       isRead: true,
     },
@@ -214,7 +214,7 @@ const chatProps: ChatProps = {
 
 const ChatPage: FC = () => {
   return (
-    <PageLayout title="Chat" className="w-full h-full flex">
+    <PageLayout title="Chat" className="max-w-[1000px] w-full h-full flex">
       <ChatBar {...testChats} />
       <Chat messages={chatProps.messages} />
     </PageLayout>
