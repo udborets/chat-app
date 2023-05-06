@@ -10,7 +10,7 @@ import styles from './styles.module.scss';
 const ChatItem: FC<ChatItemProps> = ({ companionAvatar, companionName, id, lastMessage }) => {
   return (
     <li
-      onClick={() => currentChat.setCurrentChat(id)}
+      onClick={() => currentChat.setCurrentChat({ ...currentChat.getSelf(), id: id })}
       className={`${styles.chatItem} ${currentChat.id === id ? "color-bg hover:color-bg " : "hover:chats-bg-hover"}`}>
       <Image
         src={noAvatarWhite}
