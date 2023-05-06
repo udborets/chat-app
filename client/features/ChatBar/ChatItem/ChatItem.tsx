@@ -15,7 +15,7 @@ const ChatItem: FC<ChatItemProps> = ({ companionAvatar, companionName, id, lastM
       <Image
         src={noAvatarWhite}
         alt='avatar'
-        className="rounded-[50%] h-[50px] min-h-[50px] w-[50px] min-w-[50px] "
+        className="rounded-[50%] h-[40px] min-h-[40px] w-[40px] min-w-[40px] "
       />
       <div className="h-full flex w-full flex-col justify-around ">
         <span className="font-bold">
