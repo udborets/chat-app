@@ -6,7 +6,7 @@ const SearchBar: FC = () => {
   const searchRef = useRef<HTMLInputElement>(null);
   return (
     <input
-      className={`${styles.inputOutline} w-full h-[40px] min-h-[40px] message-bg px-5 rounded-[30px]`}
+      className={`${styles.searchBar} w-full h-[50px] min-h-[50px] message-bg px-5 text-[1.15rem] rounded-[30px]`}
       placeholder="Search..."
       ref={searchRef}
     />
