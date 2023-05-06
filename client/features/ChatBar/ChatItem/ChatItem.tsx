@@ -1,13 +1,17 @@
+import { observer } from 'mobx-react-lite';
 import Image from 'next/image';
 import { FC } from 'react';
 
+import { currentChat } from '@/store/CurrentChat';
 import noAvatarWhite from './assets/no-avatar-white.png';
 import { ChatItemProps } from './models';
 import styles from './styles.module.scss';
 
 const ChatItem: FC<ChatItemProps> = ({ companionAvatar, companionName, id, lastMessage }) => {
   return (
-    <li className={`${styles.bgAnimation} flex w-[96%] h-[70px] min-h-[70px] text-[1.2rem] py-1 px-3 justify-center items-center gap-4 rounded-[10px]`}>
+    <li
+      onClick={() => currentChat.setCurrentChat(id)}
+      className={`${styles.chatItem} ${currentChat.id === id ? "color-bg hover:color-bg " : "hover:chats-bg-hover"}`}>
       <Image
         src={noAvatarWhite}
         alt='avatar'
@@ -25,4 +29,4 @@ const ChatItem: FC<ChatItemProps> = ({ companionAvatar, companionName, id, lastM
   )
 }
 
-export default ChatItem;
+export default observer(ChatItem);
