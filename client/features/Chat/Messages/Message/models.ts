@@ -1,6 +1,6 @@
 export type MessageProps = {
   isOwn: boolean;
-  messageText: string;
+  text: string;
   isRead: boolean;
   sendingTime: number;
   id: string;
