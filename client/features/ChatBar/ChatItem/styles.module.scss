@@ -1,7 +1,5 @@
-.bgAnimation {
+.chatItem {
+  @apply flex w-[96%] h-[70px] min-h-[70px] 
+    text-[1.2rem] py-1 px-3 justify-center items-center gap-4 rounded-[10px];
   transition: all 0.3s ease-out;
-
-  &:hover {
-    @apply chats-bg-hover;
-  }
 }
