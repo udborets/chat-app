@@ -9,7 +9,7 @@ const ChatBar: FC<ChatBarProps> = ({ chats }) => {
   return (
     <aside className="flex flex-col gap-4 chats-bg h-full max-w-[400px] w-full p-2 text-main">
       <SearchBar />
-      <ul className={`flex flex-col gap-2 overflow-y-scroll ${styles.ChatScrollBar}`}>
+      <ul className={`flex flex-col gap-2 overflow-y-scroll ${styles.chatsScrollBar}`}>
         {chats.map(chat => (
           <ChatItem {...chat} key={chat.id} />
         ))}
