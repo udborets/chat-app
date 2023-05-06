@@ -6,7 +6,7 @@ import styles from './styles.module.scss';
 const Message: FC<MessageProps> = ({ id, isOwn, text, sendingTime, isRead }) => {
   return (
     <div className={`w-full h-fit flex ${isOwn ? "justify-end" : "justify-start"}`}>
-      <div className={`flex items-end w-fit h-fit ${isOwn ? 'mr-4' : 'ml-4'}`}>
+      <div className={`flex items-end w-fit h-fit`}>
         {!isOwn
           ? <span className={styles.triangle}></span>
           : ''}
