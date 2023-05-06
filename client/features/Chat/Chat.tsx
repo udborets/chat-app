@@ -1,11 +1,13 @@
-import { FC } from "react"
-import MessageInput from "./MessageInput/MessageInput"
-import Messages from "./Messages/Messages"
+import { FC } from "react";
 
-const Chat: FC = () => {
+import MessageInput from "./MessageInput/MessageInput";
+import Messages from "./Messages/Messages";
+import { ChatProps } from "./models";
+
+const Chat: FC<ChatProps> = ({ messages }) => {
   return (
     <div className="w-full h-full flex flex-col justify-end">
-      <Messages />
+      <Messages messages={messages} />
       <MessageInput />
     </div>
   )
