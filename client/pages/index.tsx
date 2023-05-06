@@ -1,9 +1,10 @@
 import { FC } from "react";
 
-import PageLayout from "@/layouts/PageLayout/PageLayout";
-import ChatBar from "@/features/ChatBar/ChatBar";
 import Chat from "@/features/Chat/Chat";
-import { ChatBarProps } from "@/features/ChatBar/models";
+import type { ChatProps } from "@/features/Chat/models";
+import ChatBar from "@/features/ChatBar/ChatBar";
+import type { ChatBarProps } from "@/features/ChatBar/models";
+import PageLayout from "@/layouts/PageLayout/PageLayout";
 
 const testChats: ChatBarProps = {
   chats: [
@@ -15,27 +16,74 @@ const testChats: ChatBarProps = {
     },
     {
       companionAvatar: '',
-      companionName: "test 1",
+      companionName: "test 2",
       id: Math.random(),
       lastMessage: "Hello!",
     },
     {
       companionAvatar: '',
-      companionName: "test 1",
+      companionName: "test 3",
       id: Math.random(),
       lastMessage: "Hello!",
     },
     {
       companionAvatar: '',
-      companionName: "test 1",
+      companionName: "test 4",
       id: Math.random(),
       lastMessage: "Hello!",
     },
     {
       companionAvatar: '',
-      companionName: "test 1",
+      companionName: "test 5",
       id: Math.random(),
       lastMessage: "Hello!",
+    },
+  ]
+}
+
+const chatProps: ChatProps = {
+  messages: [
+    {
+      id: Math.random().toString(),
+      isOwn: true,
+      messageText: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    },
+    {
+      id: Math.random().toString(),
+      isOwn: true,
+      messageText: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    },
+    {
+      id: Math.random().toString(),
+      isOwn: true,
+      messageText: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    },
+    {
+      id: Math.random().toString(),
+      isOwn: true,
+      messageText: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    },
+    {
+      id: Math.random().toString(),
+      isOwn: true,
+      messageText: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    },
+    {
+      id: Math.random().toString(),
+      isOwn: true,
+      messageText: "",
+      sendingTime: Date.now(),
+      isRead: false,
     },
   ]
 }
@@ -44,7 +92,7 @@ const HomePage: FC = () => {
   return (
     <PageLayout title="YouChat" className="w-full h-full flex">
       <ChatBar {...testChats} />
-      <Chat />
+      <Chat messages={chatProps.messages} />
     </PageLayout>
   )
 }
