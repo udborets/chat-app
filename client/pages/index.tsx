@@ -11,31 +11,31 @@ const testChats: ChatBarProps = {
     {
       companionAvatar: '',
       companionName: "test 1",
-      id: Math.random(),
+      id: Math.random().toString(),
       lastMessage: "Hello!",
     },
     {
       companionAvatar: '',
       companionName: "test 2",
-      id: Math.random(),
+      id: Math.random().toString(),
       lastMessage: "Hello!",
     },
     {
       companionAvatar: '',
       companionName: "test 3",
-      id: Math.random(),
+      id: Math.random().toString(),
       lastMessage: "Hello!",
     },
     {
       companionAvatar: '',
       companionName: "test 4",
-      id: Math.random(),
+      id: Math.random().toString(),
       lastMessage: "Hello!",
     },
     {
       companionAvatar: '',
       companionName: "test 5",
-      id: Math.random(),
+      id: Math.random().toString(),
       lastMessage: "Hello!",
     },
   ]
@@ -45,7 +45,7 @@ const chatProps: ChatProps = {
   messages: [
     {
       id: Math.random().toString(),
-      isOwn: true,
+      isOwn: false,
       messageText: "skjfs",
       sendingTime: Date.now(),
       isRead: true,
@@ -59,7 +59,7 @@ const chatProps: ChatProps = {
     },
     {
       id: Math.random().toString(),
-      isOwn: true,
+      isOwn: false,
       messageText: "skjfs",
       sendingTime: Date.now(),
       isRead: true,
@@ -73,7 +73,7 @@ const chatProps: ChatProps = {
     },
     {
       id: Math.random().toString(),
-      isOwn: true,
+      isOwn: false,
       messageText: "skjfs",
       sendingTime: Date.now(),
       isRead: true,
