@@ -22,6 +22,10 @@
   .color-bg {
     @apply bg-[var(--color-bg)];
   }
+
+  .message-bg {
+    @apply bg-[var(--message-bg)];
+  }
 }
 
 :root {
@@ -29,6 +33,7 @@
   --text-main: rgb(215, 215, 215);
   --chats-bg: rgb(41, 41, 41);
   --color-bg: rgb(132, 0, 193);
+  --message-bg: rgb(15, 15, 15);
   --chats-bg-hover: rgb(57, 57, 57);
 }
 
