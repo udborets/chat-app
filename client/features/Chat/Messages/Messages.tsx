@@ -1,8 +1,15 @@
-import { FC } from "react"
+import { FC } from "react";
 
-const Messages: FC = () => {
+import Message from "./Message/Message";
+import { MessagesProps } from "./models";
+
+const Messages: FC<MessagesProps> = ({ messages }) => {
   return (
-    <div>Messages</div>
+    <div className="w-full h-full flex flex-col overflow-y">
+      {messages.map((messageProps) => (
+        <Message {...messageProps} key={messageProps.id} />
+      ))}
+    </div>
   )
 }
 
