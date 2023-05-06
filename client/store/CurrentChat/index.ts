@@ -1,14 +1,24 @@
 import { makeAutoObservable } from "mobx";
 
+import { CurrentChatProps } from "./models";
+
 class CurrentChat {
   id: string = "";
+  companionAvatar: string = "";
+  companionName: string = "";
 
   constructor() {
     makeAutoObservable(this);
   }
 
-  setCurrentChat(id: string) {
+  getSelf() {
+    return this;
+  }
+
+  setCurrentChat({ id, companionAvatar, companionName }: CurrentChatProps) {
     this.id = id;
+    this.companionAvatar = companionAvatar;
+    this.companionName = companionName;
   }
 }
 
