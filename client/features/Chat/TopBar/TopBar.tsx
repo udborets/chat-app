@@ -6,7 +6,7 @@ import menuIconWhite from './assets/menuIconWhite.png';
 
 const TopBar = observer(() => {
   return (
-    <div className="w-full h-[60px] min-h-[40px] flex border-b-2 px-4 items-center">
+    <div className="w-full h-[60px] min-h-[40px] flex chats-bg px-4 items-center">
       <button
         onClick={() => chatBarState.toggleIsActive()}
         className="pc:hidden h-fit w-fit p-3">
