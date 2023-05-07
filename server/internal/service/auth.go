@@ -1,76 +1,88 @@
 package service
 
 import (
-	"github.com/IskanderSh/chat-app/internal"
-	"github.com/IskanderSh/chat-app/internal/repository"
 	"github.com/gin-gonic/gin"
+	"github.com/udborets/chat-app/server/internal/repository"
+	"github.com/udborets/chat-app/server/internal/responses"
+	"github.com/udborets/chat-app/server/internal/utilities"
+	"golang.org/x/crypto/bcrypt"
+	"log"
 	"net/http"
 	"regexp"
+	"time"
 )
 
 var (
 	validName  = regexp.MustCompile(`[a-zA-Z]{2,20}`)
-	validLogin = regexp.MustCompile(`[\w*!@#$%^&?]{3,30}`)
 	validEmail = regexp.MustCompile(`\w{4,15}@\w{4,8}\.\w{2,5}`)
 	validPhone = regexp.MustCompile(`8[0-9]{10}`)
 	validPass  = regexp.MustCompile(`[\w*!@#$%^&?]{8,30}`)
 )
 
 type IAuthBLogic interface {
-	SignUp(ctx *gin.Context, inp internal.UserSignUpInput) string
-	SignIn(ctx *gin.Context, inp internal.UserSignInInput) string
+	SignUp(ctx *gin.Context, inp utilities.UserSignUpInput)
+	//SignIn(ctx *gin.Context, inp internal.UserSignInInput) string
 }
 
 type AuthBLogic struct {
 	database repository.IAuthDB
 }
 
-func NewAuthBLogic() *AuthBLogic {
+func NewAuthBLogic(config string) *AuthBLogic {
 	return &AuthBLogic{
-		database: repository.NewAuthDB(),
+		database: repository.NewAuthDB(config),
 	}
 }
 
 func invalidHandler(ctx *gin.Context, msg string) string {
-	internal.NewResponse(ctx, http.StatusBadRequest, "invalid "+msg)
+	responses.NewResponse(ctx, http.StatusBadRequest, "invalid "+msg)
 	return ""
 }
 
-func (b *AuthBLogic) SignUp(ctx *gin.Context, inp internal.UserSignUpInput) string {
+func (b *AuthBLogic) SignUp(ctx *gin.Context, inp utilities.UserSignUpInput) {
 	if !validName.MatchString(inp.Name) {
-		return invalidHandler(ctx, "name")
-	}
-	if !validName.MatchString(inp.Surname) {
-		return invalidHandler(ctx, "surname")
-	}
-	if !validLogin.MatchString(inp.Login) {
-		return invalidHandler(ctx, "login")
+		invalidHandler(ctx, "name")
 	}
 	if !validEmail.MatchString(inp.Email) {
-		return invalidHandler(ctx, "email")
+		invalidHandler(ctx, "email")
 	}
 	if !validPhone.MatchString(inp.Phone) {
-		return invalidHandler(ctx, "phone")
+		invalidHandler(ctx, "phone")
 	}
 	if !validPass.MatchString(inp.Password) {
-		return invalidHandler(ctx, "password")
+		invalidHandler(ctx, "password")
 	}
 
-	jwtToken, err := b.database.GenerateJWTToken(inp.Email, inp.Password)
+	hash, err := bcrypt.GenerateFromPassword([]byte(inp.Password), 10)
 	if err != nil {
-		internal.NewResponse(ctx, http.StatusInternalServerError, "")
+		log.Printf("error hashing password: %s", inp.Password)
+		return
 	}
 
-	return jwtToken
+	user := utilities.User{
+		Name:      inp.Name,
+		Email:     inp.Email,
+		Phone:     inp.Phone,
+		HashPass:  hash,
+		AvatarURL: inp.AvatarURL,
+		CreatedAt: time.Now().Unix(),
+	}
+
+	err, msg := b.database.AddUser(user)
+	if err != nil {
+		responses.NewResponse(ctx, http.StatusInternalServerError, msg)
+		return
+	}
+	responses.NewResponse(ctx, http.StatusOK, "add user to database")
 }
 
-func (b *AuthBLogic) SignIn(ctx *gin.Context, inp internal.UserSignInInput) string {
-	if !validEmail.MatchString(inp.Email) {
-		return invalidHandler(ctx, "email")
-	}
-	if !validPass.MatchString(inp.Password) {
-		return invalidHandler(ctx, "password")
-	}
-
-	b.database.CheckPass(inp.Email, inp.Password)
-}
+//func (b *AuthBLogic) SignIn(ctx *gin.Context, inp internal.UserSignInInput) string {
+//	if validEmail.MatchString(inp.Login) {
+//
+//	}
+//	if !validPass.MatchString(inp.Password) {
+//		return invalidHandler(ctx, "password")
+//	}
+//
+//	b.database.CheckPass(inp.Login, inp.Password)
+//}

@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/udborets/chat-app/server/internal"
+)
 
 func main() {
 	fmt.Println("server started")
+	internal.StartServer()
 }

@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	"fmt"
-	"github.com/IskanderSh/chat-app/internal"
-	"github.com/IskanderSh/chat-app/internal/service"
 	"github.com/gin-gonic/gin"
+	"github.com/udborets/chat-app/server/internal/responses"
+	"github.com/udborets/chat-app/server/internal/service"
+	"github.com/udborets/chat-app/server/internal/utilities"
 	"net/http"
 )
 
@@ -12,9 +12,9 @@ type AuthHTTP struct {
 	authBLogic service.IAuthBLogic
 }
 
-func NewHTTP() *AuthHTTP {
+func NewHTTP(config string) *AuthHTTP {
 	return &AuthHTTP{
-		authBLogic: service.NewAuthBLogic(),
+		authBLogic: service.NewAuthBLogic(config),
 	}
 }
 
@@ -23,31 +23,30 @@ func (h *AuthHTTP) Start() {
 
 	authAPI := app.Group("/auth")
 
-	authAPI.POST("/sign-up", h.userSignUp)
-	//authAPI.POST("/sing-in", h.userSignIn)
+	authAPI.POST("/signup", h.userSignUp)
+	//authAPI.POST("/singin", h.userSignIn)
 
-	app.Run(":3000")
+	app.Run(":1773")
 }
 
 func (h *AuthHTTP) userSignUp(ctx *gin.Context) {
-	var inp internal.UserSignUpInput
+	var inp utilities.UserSignUpInput
 
 	if err := ctx.BindJSON(&inp); err != nil {
-		internal.NewResponse(ctx, http.StatusBadRequest, "invalid input body")
+		responses.NewResponse(ctx, http.StatusBadRequest, "invalid input body")
 		return
 	}
 
-	jwtToken := h.authBLogic.SignUp(ctx, inp)
-	fmt.Println(jwtToken)
+	h.authBLogic.SignUp(ctx, inp)
 }
 
-func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
-	var inp internal.UserSignInInput
-
-	if err := ctx.BindJSON(&inp); err != nil {
-		internal.NewResponse(ctx, http.StatusBadRequest, "invalid input body")
-		return
-	}
-
-	h.authBLogic.SignIn(ctx, inp)
-}
+//func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
+//	var inp internal.UserSignInInput
+//
+//	if err := ctx.BindJSON(&inp); err != nil {
+//		internal.NewResponse(ctx, http.StatusBadRequest, "invalid input body")
+//		return
+//	}
+//
+//	h.authBLogic.SignIn(ctx, inp)
+//}
