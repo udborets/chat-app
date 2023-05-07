@@ -5,7 +5,7 @@ import { MessagesProps } from "./models";
 
 const Messages: FC<MessagesProps> = ({ messages }) => {
   return (
-    <div className={`pc:scrollBar w-full h-full flex text-main flex-col overflow-y-scroll gap-1 py-5 pc:px-4 px-2`}>
+    <div className={`pc:scrollBar w-full h-full bg-chat flex text-main flex-col overflow-y-scroll gap-1 py-5 pc:px-4 px-2`}>
       {messages.map((messageProps) => (
         <Message {...messageProps} key={messageProps.id} />
       ))}

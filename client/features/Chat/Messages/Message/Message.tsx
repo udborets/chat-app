@@ -13,7 +13,7 @@ const Message: FC<MessageProps> = ({ id, isOwn, text, sendingTime, isRead }) => 
         <p
           className={`${isOwn
             ? 'bg-color rounded-[10px] rounded-br-[0]'
-            : 'bg-secondary rounded-[10px] rounded-bl-[0]'
+            : 'bg-message rounded-[10px] rounded-bl-[0]'
             } w-fit h-fit min-h-[40px] min-w-[70px] max-w-[300px] pc:max-w-[400px] p-2 text-left outline-none border-none`}
         >
           {text}

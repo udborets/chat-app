@@ -43,6 +43,14 @@
     @apply bg-[var(--bg-color-hover)];
   }
 
+  .bg-chat {
+    @apply bg-[var(--bg-chat)];
+  }
+
+  .bg-message {
+    @apply bg-[var(--bg-message)];
+  }
+
   .scrollBar {
     &::-webkit-scrollbar {
       width: 8px;
@@ -73,7 +81,8 @@
   --bg-secondary-lighter: rgb(43, 43, 43);
   --bg-secondary-hover: rgb(56, 56, 56);
   --text-main: rgb(215, 215, 215);
-  --bg-disabled: rgb(41, 41, 41);
+  --bg-chat: rgb(27,27, 27);
+  --bg-message: rgb(70, 70, 70);
   --bg-color: #6124d3;
   --bg-color-hover: rgb(70, 29, 145);
   --bg-color-active: rgb(47, 18, 102);
