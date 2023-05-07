@@ -7,7 +7,7 @@ const PageLayout: FC<IPageLayoutProps> = ({ children, title, className }) => {
   return (
     <>
       <Head>
-        <title>{title ?? ""}</title>
+        <title>{"YouChat | " + (title ?? "")}</title>
       </Head>
       <main className={className}>
         {children}

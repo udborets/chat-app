@@ -6,4 +6,9 @@ module.exports = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./features/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  theme: {
+    screens: {
+      pc: "700px",
+    },
+  },
 };
