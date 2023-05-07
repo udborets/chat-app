@@ -7,7 +7,7 @@ import TopBar from "./TopBar/TopBar";
 
 const Chat: FC<ChatProps> = ({ messages }) => {
   return (
-    <div className="w-full h-full flex flex-col justify-end">
+    <div className="w-full h-full flex flex-col justify-end relative">
       <TopBar />
       <Messages messages={messages} />
       <MessageInput />
