@@ -11,7 +11,8 @@ type AuthDB struct {
 	db *sql.DB
 }
 
-func NewAuthDB() *AuthDB {
+func NewAuthDB(config string) *AuthDB {
+	db, err := sql.Open("postgres", config)
 	return &AuthDB{db: nil}
 }
 
