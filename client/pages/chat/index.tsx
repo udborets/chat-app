@@ -78,7 +78,85 @@ const chatProps: ChatProps = {
       sendingTime: Date.now(),
       isRead: true,
     },
-
+    {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    }, {
+      id: Math.random().toString(),
+      isOwn: false,
+      text: "skjfs",
+      sendingTime: Date.now(),
+      isRead: true,
+    },
   ]
 }
 
