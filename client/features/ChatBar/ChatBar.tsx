@@ -21,9 +21,10 @@ const ChatBar: FC<ChatBarProps> = observer(({ chats }) => {
           ))}
         </ul>
       </aside>
-      <div className={`${chatBarState.isActive
-        ? 'z-[9] bg-[#000000af]'
-        : 'z-[-100] bg-none'} h-full w-full duration-300 transition-all  absolute`}
+      <div
+        className={`${chatBarState.isActive
+          ? 'z-[9] bg-[#000000af]'
+          : 'z-[-1] bg-none'} h-full w-full duration-300 transition-all  absolute`}
         onClick={() => chatBarState.toggleIsActive()}
       />
     </>
