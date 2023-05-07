@@ -23,9 +23,9 @@ const SearchBar: FC = () => {
     <div
       onClick={focus}
       className={`duration-200 transition-all ease-out ${isFocused
-        ? "outline-[var(--color-bg)] hover:outline-[var(--color-bg)]"
+        ? "outline-[var(--bg-color)] hover:outline-[var(--bg-color-hover)]"
         : "outline-[rgba(255,255,255,0.34)] hover:outline-[rgba(255,255,255,0.62)]"
-        } w-full h-[40px] min-h-[40px] message-bg px-[15px] rounded-[30px] outline-2 outline flex items-center gap-4`}
+        } w-full h-[40px] min-h-[40px] bg-input px-[15px] rounded-[30px] outline-2 outline flex items-center gap-4`}
     >
       <Image
         className="h-[15px] w-[15px]"
@@ -33,7 +33,7 @@ const SearchBar: FC = () => {
         alt="Search icon"
       />
       <input
-        className="h-full w-full outline-none message-bg text-[1rem]"
+        className="h-full w-full outline-none bg-input text-[1rem]"
         onFocus={focus}
         onBlur={blur}
         placeholder="Search..."

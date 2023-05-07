@@ -11,7 +11,7 @@ const ChatItem: FC<ChatItemProps> = ({ companionAvatar, companionName, id, lastM
   return (
     <li
       onClick={() => currentChat.setCurrentChat({ ...currentChat.getSelf(), id: id })}
-      className={`${styles.chatItem} ${currentChat.id === id ? "color-bg hover:color-bg " : "hover:chats-bg-hover"}`}>
+      className={`${styles.chatItem} ${currentChat.id === id ? "bg-color" : "hover:bg-secondary-hover"}`}>
       <Image
         src={noAvatarWhite}
         alt='avatar'

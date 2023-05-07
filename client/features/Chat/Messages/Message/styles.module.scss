@@ -1,7 +1,7 @@
 .ownTriangle {
   width: 10px;
   height: 10px;
-  background: linear-gradient(to top right, var(--color-bg) 50%, transparent 0);
+  background: linear-gradient(to top right, var(--bg-color) 50%, transparent 0);
   outline: none;
   border: none;
 }
@@ -11,7 +11,7 @@
   height: 10px;
   background: linear-gradient(
     to top left,
-    var(--message-bg) 50%,
+    var(--bg-secondary) 50%,
     transparent 0
   );
   outline: none;

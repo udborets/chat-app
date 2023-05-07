@@ -3,36 +3,44 @@
 @tailwind utilities;
 
 @layer components {
-  .chats-bg {
-    @apply bg-[var(--chats-bg)];
-  }
-
-  .chats-bg-hover {
-    @apply bg-[var(--chats-bg-hover)];
-  }
-
   .text-main {
     @apply text-[var(--text-main)];
   }
 
-  .color-bg-hover {
-    @apply bg-[var(--color-bg-hover)];
+  .bg-input {
+    @apply bg-[var(--bg-input)];
   }
 
-  .color-bg-active {
-    @apply bg-[var(--color-bg-active)];
+  .bg-main {
+    @apply bg-[var(--bg-input)];
   }
 
-  .main-bg {
-    @apply bg-[var(--main-bg)];
+  .bg-secondary {
+    @apply bg-[var(--bg-secondary)];
   }
 
-  .color-bg {
-    @apply bg-[var(--color-bg)];
+  .bg-secondary-hover {
+    @apply bg-[var(--bg-secondary-hover)];
   }
 
-  .message-bg {
-    @apply bg-[var(--message-bg)];
+  .bg-secondary-lighter {
+    @apply bg-[var(--bg-secondary-lighter)];
+  }
+
+  .bg-disabled {
+    @apply bg-[var(--bg-disabled)];
+  }
+
+  .bg-color {
+    @apply bg-[var(--bg-color)];
+  }
+
+  .bg-color-active {
+    @apply bg-[var(--bg-color-active)];
+  }
+
+  .bg-color-hover {
+    @apply bg-[var(--bg-color-hover)];
   }
 
   .scrollBar {
@@ -60,14 +68,16 @@
 }
 
 :root {
-  --main-bg: rgb(23, 23, 23);
+  --bg-main: rgb(23, 23, 23);
+  --bg-secondary: rgb(34, 34, 34);
+  --bg-secondary-lighter: rgb(43, 43, 43);
+  --bg-secondary-hover: rgb(56, 56, 56);
   --text-main: rgb(215, 215, 215);
-  --chats-bg: rgb(41, 41, 41);
-  --color-bg: rgb(58, 23, 153);
-  --color-bg-hover: rgb(74, 29, 197);
-  --color-bg-active: rgb(40, 15, 110);
-  --message-bg: rgb(69, 69, 69);
-  --chats-bg-hover: rgb(57, 57, 57);
+  --bg-disabled: rgb(41, 41, 41);
+  --bg-color: #6124d3;
+  --bg-color-hover: rgb(70, 29, 145);
+  --bg-color-active: rgb(47, 18, 102);
+  --bg-input: rgb(10, 10, 10);
 }
 
 html,
@@ -78,7 +88,7 @@ body,
 }
 
 html {
-  background: var(--main-bg);
+  background: var(--bg-main);
 }
 
 #__next {
