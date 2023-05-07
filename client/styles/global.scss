@@ -26,14 +26,37 @@
   .message-bg {
     @apply bg-[var(--message-bg)];
   }
+
+  .scrollBar {
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.377);
+      border-radius: 20px;
+
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.719);
+      }
+
+      &:active {
+        background-color: rgb(0, 0, 0);
+      }
+    }
+  }
 }
 
 :root {
   --main-bg: rgb(23, 23, 23);
   --text-main: rgb(215, 215, 215);
   --chats-bg: rgb(41, 41, 41);
-  --color-bg: rgb(132, 0, 193);
-  --message-bg: rgb(15, 15, 15);
+  --color-bg: rgb(58, 23, 153);
+  --message-bg: rgb(69, 69, 69);
   --chats-bg-hover: rgb(57, 57, 57);
 }
 
@@ -49,6 +72,6 @@ html {
 }
 
 #__next {
-  @apply xl:px-[140px];
   display: flex;
+  justify-content: center;
 }

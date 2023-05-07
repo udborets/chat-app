@@ -1,14 +1,27 @@
 import { FC } from "react";
 
 import { MessageProps } from "./models";
+import styles from './styles.module.scss';
 
 const Message: FC<MessageProps> = ({ id, isOwn, text, sendingTime, isRead }) => {
   return (
-    <div className={`min-w-[200px] max-w-[300px] min-h-[30px] ${
-      isOwn ? "" : ""}`}>
-      <span>
-        {text}
-      </span>
+    <div className={`w-full h-fit flex ${isOwn ? "justify-end" : "justify-start"}`}>
+      <div className={`flex items-end w-fit h-fit`}>
+        {!isOwn
+          ? <span className={styles.triangle}></span>
+          : ''}
+        <p
+          className={`${isOwn
+            ? 'color-bg rounded-[10px] rounded-br-[0]'
+            : 'message-bg rounded-[10px] rounded-bl-[0]'
+            } w-fit h-fit min-h-[40px] min-w-[70px] max-w-[300px] pc:max-w-[400px] p-2 text-left outline-none border-none`}
+        >
+          {text}
+        </p>
+        {isOwn
+          ? <span className={styles.ownTriangle}></span>
+          : ''}
+      </div>
     </div>
   )
 }

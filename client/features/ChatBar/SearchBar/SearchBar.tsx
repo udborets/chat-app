@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useRef, useState } from "react";
 
 import crossIconWhite from './assets/crossIconWhite.png';
 import searchIconWhite from './assets/searchIconWhite.png';
@@ -18,9 +18,6 @@ const SearchBar: FC = () => {
   }
   const clearSearchQuery = () => {
     setSearchQuery('');
-    if (searchRef.current?.value) {
-      searchRef.current.value = '';
-    }
   }
   return (
     <div
@@ -41,6 +38,7 @@ const SearchBar: FC = () => {
         onBlur={blur}
         placeholder="Search..."
         ref={searchRef}
+        value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
       {searchQuery !== ''

@@ -1,4 +1,4 @@
-import { FC, useRef } from "react"
+import { FC, useRef } from "react";
 
 const MessageInput: FC = () => {
   const messageInputRef = useRef<HTMLInputElement>(null);
