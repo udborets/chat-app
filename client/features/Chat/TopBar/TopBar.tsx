@@ -9,7 +9,7 @@ const TopBar = observer(() => {
     <div className="w-full h-[60px] min-h-[40px] flex border-b-2 px-4 items-center">
       <button
         onClick={() => chatBarState.toggleIsActive()}
-        className="h-fit w-fit p-3">
+        className="pc:hidden h-fit w-fit p-3">
         <Image
           className="w-[20px] h-[20px]"
           src={menuIconWhite}
