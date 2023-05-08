@@ -13,15 +13,15 @@ import (
 )
 
 var (
-	validName  = regexp.MustCompile(`[a-zA-Z]{2,20}`)
+	validName  = regexp.MustCompile(`[a-zA-Zа-яА-ЯёЁ]{2,20}`)
 	validEmail = regexp.MustCompile(`\w{4,15}@\w{4,8}\.\w{2,5}`)
-	validPhone = regexp.MustCompile(`8[0-9]{10}`)
+	validPhone = regexp.MustCompile(`[0-9]{8,15}`)
 	validPass  = regexp.MustCompile(`[\w*!@#$%^&?]{8,30}`)
 )
 
 type IAuthBLogic interface {
 	SignUp(ctx *gin.Context, inp utilities.UserSignUpInput)
-	//SignIn(ctx *gin.Context, inp internal.UserSignInInput) string
+	SignIn(ctx *gin.Context, inp utilities.UserSignInInput) string
 }
 
 type AuthBLogic struct {
@@ -76,13 +76,22 @@ func (b *AuthBLogic) SignUp(ctx *gin.Context, inp utilities.UserSignUpInput) {
 	responses.NewResponse(ctx, http.StatusOK, "add user to database")
 }
 
-//func (b *AuthBLogic) SignIn(ctx *gin.Context, inp internal.UserSignInInput) string {
-//	if validEmail.MatchString(inp.Login) {
-//
-//	}
-//	if !validPass.MatchString(inp.Password) {
-//		return invalidHandler(ctx, "password")
-//	}
-//
-//	b.database.CheckPass(inp.Login, inp.Password)
-//}
+func (b *AuthBLogic) SignIn(ctx *gin.Context, inp utilities.UserSignInInput) string {
+	if validEmail.MatchString(inp.Login) {
+		err, msg := b.database.CheckPassByEmail(inp.Login, inp.Password)
+		if err != nil {
+			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+		}
+	} else if validName.MatchString(inp.Login) {
+		err, msg := b.database.CheckPassByName(inp.Login, inp.Password)
+		if err != nil {
+			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+		}
+	} else if validPhone.MatchString(inp.Login) {
+		err, msg := b.database.CheckPassByPhone(inp.Login, inp.Password)
+		if err != nil {
+			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+		}
+	}
+
+}
