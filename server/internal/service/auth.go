@@ -1,10 +1,11 @@
 package service
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/udborets/chat-app/server/internal/models"
 	"github.com/udborets/chat-app/server/internal/repository"
 	"github.com/udborets/chat-app/server/internal/responses"
-	"github.com/udborets/chat-app/server/internal/utilities"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
@@ -20,8 +21,8 @@ var (
 )
 
 type IAuthBLogic interface {
-	SignUp(ctx *gin.Context, inp utilities.UserSignUpInput)
-	SignIn(ctx *gin.Context, inp utilities.UserSignInInput) string
+	SignUp(ctx *gin.Context, inp models.UserSignUpInput)
+	//SignIn(ctx *gin.Context, inp models.UserSignInInput) string
 }
 
 type AuthBLogic struct {
@@ -39,14 +40,14 @@ func invalidHandler(ctx *gin.Context, msg string) string {
 	return ""
 }
 
-func (b *AuthBLogic) SignUp(ctx *gin.Context, inp utilities.UserSignUpInput) {
+func (b *AuthBLogic) SignUp(ctx *gin.Context, inp models.UserSignUpInput) {
 	if !validName.MatchString(inp.Name) {
 		invalidHandler(ctx, "name")
 	}
 	if !validEmail.MatchString(inp.Email) {
 		invalidHandler(ctx, "email")
 	}
-	if !validPhone.MatchString(inp.Phone) {
+	if inp.Phone != "" && !validPhone.MatchString(inp.Phone) {
 		invalidHandler(ctx, "phone")
 	}
 	if !validPass.MatchString(inp.Password) {
@@ -59,16 +60,17 @@ func (b *AuthBLogic) SignUp(ctx *gin.Context, inp utilities.UserSignUpInput) {
 		return
 	}
 
-	user := utilities.User{
+	user := models.User{
 		Name:      inp.Name,
 		Email:     inp.Email,
 		Phone:     inp.Phone,
-		HashPass:  hash,
+		HashPass:  string(hash),
 		AvatarURL: inp.AvatarURL,
 		CreatedAt: time.Now().Unix(),
 	}
 
 	err, msg := b.database.AddUser(user)
+	fmt.Println(err)
 	if err != nil {
 		responses.NewResponse(ctx, http.StatusInternalServerError, msg)
 		return
@@ -76,22 +78,22 @@ func (b *AuthBLogic) SignUp(ctx *gin.Context, inp utilities.UserSignUpInput) {
 	responses.NewResponse(ctx, http.StatusOK, "add user to database")
 }
 
-func (b *AuthBLogic) SignIn(ctx *gin.Context, inp utilities.UserSignInInput) string {
-	if validEmail.MatchString(inp.Login) {
-		err, msg := b.database.CheckPassByEmail(inp.Login, inp.Password)
-		if err != nil {
-			responses.NewResponse(ctx, http.StatusBadRequest, msg)
-		}
-	} else if validName.MatchString(inp.Login) {
-		err, msg := b.database.CheckPassByName(inp.Login, inp.Password)
-		if err != nil {
-			responses.NewResponse(ctx, http.StatusBadRequest, msg)
-		}
-	} else if validPhone.MatchString(inp.Login) {
-		err, msg := b.database.CheckPassByPhone(inp.Login, inp.Password)
-		if err != nil {
-			responses.NewResponse(ctx, http.StatusBadRequest, msg)
-		}
-	}
-
-}
+//func (b *AuthBLogic) SignIn(ctx *gin.Context, inp models.UserSignInInput) string {
+//	if validEmail.MatchString(inp.Login) {
+//		err, msg := b.database.CheckPassByEmail(inp.Login, inp.Password)
+//		if err != nil {
+//			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+//		}
+//	} else if validName.MatchString(inp.Login) {
+//		err, msg := b.database.CheckPassByName(inp.Login, inp.Password)
+//		if err != nil {
+//			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+//		}
+//	} else if validPhone.MatchString(inp.Login) {
+//		err, msg := b.database.CheckPassByPhone(inp.Login, inp.Password)
+//		if err != nil {
+//			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+//		}
+//	}
+//
+//}

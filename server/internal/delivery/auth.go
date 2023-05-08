@@ -2,9 +2,9 @@ package delivery
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/udborets/chat-app/server/internal/models"
 	"github.com/udborets/chat-app/server/internal/responses"
 	"github.com/udborets/chat-app/server/internal/service"
-	"github.com/udborets/chat-app/server/internal/utilities"
 	"net/http"
 )
 
@@ -23,13 +23,13 @@ func (h *AuthHTTP) Start() {
 
 	authAPI := app.Group("/auth")
 	authAPI.POST("/signup", h.userSignUp)
-	authAPI.POST("/signin", h.userSignIn)
+	//authAPI.POST("/signin", h.userSignIn)
 
 	app.Run(":1773")
 }
 
 func (h *AuthHTTP) userSignUp(ctx *gin.Context) {
-	var inp utilities.UserSignUpInput
+	var inp models.UserSignUpInput
 
 	if err := ctx.BindJSON(&inp); err != nil {
 		responses.NewResponse(ctx, http.StatusBadRequest, "invalid input body")
@@ -39,13 +39,13 @@ func (h *AuthHTTP) userSignUp(ctx *gin.Context) {
 	h.authBLogic.SignUp(ctx, inp)
 }
 
-func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
-	var inp utilities.UserSignInInput
-
-	if err := ctx.BindJSON(&inp); err != nil {
-		responses.NewResponse(ctx, http.StatusBadRequest, "invalid input body")
-		return
-	}
-
-	h.authBLogic.SignIn(ctx, inp)
-}
+//func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
+//	var inp models.UserSignInInput
+//
+//	if err := ctx.BindJSON(&inp); err != nil {
+//		responses.NewResponse(ctx, http.StatusBadRequest, "invalid input body")
+//		return
+//	}
+//
+//	h.authBLogic.SignIn(ctx, inp)
+//}

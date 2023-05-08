@@ -1,4 +1,4 @@
-package utilities
+package models
 
 type UserSignUpInput struct {
 	Name      string `json:"name" binding:"required"`
@@ -9,13 +9,11 @@ type UserSignUpInput struct {
 }
 
 type User struct {
-	Id        string `json:"id"`
+	UserId    string `json:"id"`
 	Name      string `json:"name" binding:"required"`
-	HashPass  []byte `json:"password" binding:"required"`
+	HashPass  string `json:"password" binding:"required"`
 	Email     string `json:"email" binding:"required"`
 	Phone     string `json:"phone"`
-	Friends   []User `json:"friends"`
-	Chats     []Chat `json:"chats"`
 	AvatarURL string `json:"avatarURL"`
 	CreatedAt int64  `json:"createdAt"`
 	UpdatedAt int64  `json:"updatedAt"`
