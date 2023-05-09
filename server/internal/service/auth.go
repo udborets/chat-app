@@ -1,14 +1,12 @@
 package service
 
 import (
+	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/udborets/chat-app/server/internal/models"
 	"github.com/udborets/chat-app/server/internal/repository"
-	"github.com/udborets/chat-app/server/internal/responses"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -23,9 +21,9 @@ var (
 )
 
 type IAuthBLogic interface {
-	SignUp(ctx *gin.Context, inp models.UserSignUpInput)
-	SignIn(ctx *gin.Context, inp models.UserSignInInput) string
-	ParseJWTToken(ctx *gin.Context, stringToken string)
+	SignUp(inp models.UserSignUpInput) (int, string, error)
+	SignIn(inp models.UserSignInInput) (int, string, error)
+	ParseJWTToken(stringToken string) (interface{}, int, string, error)
 }
 
 type AuthBLogic struct {
@@ -38,29 +36,23 @@ func NewAuthBLogic(config string) *AuthBLogic {
 	}
 }
 
-func invalidHandler(ctx *gin.Context, msg string) string {
-	responses.NewResponse(ctx, http.StatusBadRequest, "invalid "+msg)
-	return ""
-}
-
-func (b *AuthBLogic) SignUp(ctx *gin.Context, inp models.UserSignUpInput) {
-	if !validName.MatchString(inp.Name) {
-		invalidHandler(ctx, "name")
-	}
-	if !validEmail.MatchString(inp.Email) {
-		invalidHandler(ctx, "email")
-	}
-	if inp.Phone != "" && !validPhone.MatchString(inp.Phone) {
-		invalidHandler(ctx, "phone")
+func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
+	if !validName.MatchString(inp.Name) && !validPhone.MatchString(inp.Phone) && !validEmail.MatchString(inp.Email) {
+		return http.StatusBadRequest, "invalid login", errors.New("invalid login")
+	} else if !validName.MatchString(inp.Name) {
+		return http.StatusBadRequest, "invalid name", errors.New("invalid name")
+	} else if !validEmail.MatchString(inp.Email) {
+		return http.StatusBadRequest, "invalid email", errors.New("invalid email")
+	} else if inp.Phone != "" && !validPhone.MatchString(inp.Phone) {
+		return http.StatusBadRequest, "invalid phone", errors.New("invalid phone")
 	}
 	if !validPass.MatchString(inp.Password) {
-		invalidHandler(ctx, "password")
+		return http.StatusBadRequest, "invalid password", errors.New("invalid password")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(inp.Password), 10)
 	if err != nil {
-		log.Printf("error hashing password: %s", inp.Password)
-		return
+		return http.StatusInternalServerError, "server couldn't hash password", err
 	}
 
 	user := models.User{
@@ -74,43 +66,39 @@ func (b *AuthBLogic) SignUp(ctx *gin.Context, inp models.UserSignUpInput) {
 		LastSeen:  time.Now().Unix(),
 	}
 
-	err, msg := b.database.AddUser(user)
+	msg, err := b.database.AddUser(user)
 	if err != nil {
-		responses.NewResponse(ctx, http.StatusInternalServerError, msg)
-		return
+		return http.StatusInternalServerError, msg, err
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "add user to database"})
+	return http.StatusOK, "successful signup", errors.New("successful signup")
 }
 
-func (b *AuthBLogic) SignIn(ctx *gin.Context, inp models.UserSignInInput) string {
+func (b *AuthBLogic) SignIn(inp models.UserSignInInput) (int, string, error) {
 	var jwtToken string
 	if validEmail.MatchString(inp.Login) {
-		err, msg := b.database.CheckPassByEmail(inp.Login, inp.Password)
+		msg, err := b.database.CheckPassByEmail(inp.Login, inp.Password)
 		if err != nil {
-			responses.NewResponse(ctx, http.StatusUnauthorized, msg)
-			return ""
+			return http.StatusUnauthorized, msg, err
 		}
 		jwtToken = msg
 	} else if validName.MatchString(inp.Login) {
-		err, msg := b.database.CheckPassByName(inp.Login, inp.Password)
+		msg, err := b.database.CheckPassByName(inp.Login, inp.Password)
 		if err != nil {
-			responses.NewResponse(ctx, http.StatusUnauthorized, msg)
-			return ""
+			return http.StatusUnauthorized, msg, err
 		}
 		jwtToken = msg
 	} else if validPhone.MatchString(inp.Login) {
-		err, msg := b.database.CheckPassByPhone(inp.Login, inp.Password)
+		msg, err := b.database.CheckPassByPhone(inp.Login, inp.Password)
 		if err != nil {
-			responses.NewResponse(ctx, http.StatusUnauthorized, msg)
-			return ""
+			return http.StatusUnauthorized, msg, err
 		}
 		jwtToken = msg
 	}
 
-	return jwtToken
+	return http.StatusOK, jwtToken, nil
 }
 
-func (b *AuthBLogic) ParseJWTToken(ctx *gin.Context, tokenString string) {
+func (b *AuthBLogic) ParseJWTToken(tokenString string) (interface{}, int, string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -118,24 +106,21 @@ func (b *AuthBLogic) ParseJWTToken(ctx *gin.Context, tokenString string) {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 	if err != nil {
-		responses.NewResponse(ctx, http.StatusUnauthorized, err.Error())
+		return nil, http.StatusUnauthorized, "server couldn't parse JWT token", err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			responses.NewResponse(ctx, http.StatusUnauthorized, "")
+			return nil, http.StatusUnauthorized, "expiration of JWT ended", nil
 		}
 
-		err, user := b.database.GetUserByID(int(claims["sub"].(float64)))
+		user, err := b.database.GetUserByID(int(claims["sub"].(float64)))
 		if err != nil {
-			fmt.Println(err.Error())
-			responses.NewResponse(ctx, http.StatusBadRequest, "no user with this id")
+			return nil, http.StatusBadRequest, "no user with this id", err
 		}
 
-		ctx.Set("user", user)
-
-		ctx.Next()
+		return user, http.StatusOK, "", nil
 	} else {
-		responses.NewResponse(ctx, http.StatusUnauthorized, "")
+		return nil, http.StatusUnauthorized, "JWT token has error", errors.New("JWT token has error")
 	}
 }
