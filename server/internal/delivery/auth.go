@@ -57,5 +57,5 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 }
 
 func (h *AuthHTTP) validate(ctx *gin.Context) {
-	// validating ooo
+	ctx.JSON(http.StatusOK, gin.H{"message": "I'm logged in"})
 }
