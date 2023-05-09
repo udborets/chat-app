@@ -81,26 +81,25 @@ func (b *AuthBLogic) SignIn(ctx *gin.Context, inp models.UserSignInInput) string
 	if validEmail.MatchString(inp.Login) {
 		err, msg := b.database.CheckPassByEmail(inp.Login, inp.Password)
 		if err != nil {
-			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+			responses.NewResponse(ctx, http.StatusUnauthorized, msg)
 			return ""
 		}
 		jwtToken = msg
 	} else if validName.MatchString(inp.Login) {
 		err, msg := b.database.CheckPassByName(inp.Login, inp.Password)
 		if err != nil {
-			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+			responses.NewResponse(ctx, http.StatusUnauthorized, msg)
 			return ""
 		}
 		jwtToken = msg
 	} else if validPhone.MatchString(inp.Login) {
 		err, msg := b.database.CheckPassByPhone(inp.Login, inp.Password)
 		if err != nil {
-			responses.NewResponse(ctx, http.StatusBadRequest, msg)
+			responses.NewResponse(ctx, http.StatusUnauthorized, msg)
 			return ""
 		}
 		jwtToken = msg
 	}
-	//ctx.JSON(http.StatusOK, gin.H{"message": "jwt token created"})
 
 	return jwtToken
 }
