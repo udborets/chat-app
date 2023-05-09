@@ -53,27 +53,26 @@ func (a *AuthDB) AddUser(user models.User) (string, error) {
 }
 
 func (a *AuthDB) CheckUniqUser(user models.UserSignUpInput) (string, error) {
-	if msg := a.checkHelper("email", user.Email); msg != "" {
-		return msg, errors.New("server couldn't add row to column with unique columns")
-	} else if msg := a.checkHelper("name", user.Name); msg != "" {
-		return msg, errors.New("server couldn't add row to column with unique columns")
-	} else if msg := a.checkHelper("phone", user.Phone); msg != "" {
-		return msg, errors.New("server couldn't add row to column with unique columns")
+	var user_id int
+
+	row := a.db.QueryRow("select user_id from \"auth\" where email=$1", user.Email)
+	row.Scan(&user_id)
+	if user_id != 0 {
+		return fmt.Sprintf("user with this email: %s already registered", user.Email), errors.New("server couldn't add row to unique column")
+	}
+
+	row = a.db.QueryRow("select user_id from \"auth\" where name=$1", user.Name)
+	row.Scan(&user_id)
+	if user_id != 0 {
+		return fmt.Sprintf("user with this name: %s already registered", user.Name), errors.New("server couldn't add row to unique column")
+	}
+
+	row = a.db.QueryRow("select user_id from \"auth\" where phone=$1", user.Phone)
+	row.Scan(&user_id)
+	if user_id != 0 {
+		return fmt.Sprintf("user with this phone: %s already registered", user.Phone), errors.New("server couldn't add row to unique column")
 	}
 	return "", nil
-}
-
-func (a *AuthDB) checkHelper(column, variable string) string {
-	var has bool
-
-	query := fmt.Sprintf("select exists (select * from \"auth\" where %s=%s", column, variable)
-	row := a.db.QueryRow(query)
-
-	err := row.Scan(&has)
-	if err == nil {
-		return fmt.Sprintf("user with this %s: %s already registered", column, variable)
-	}
-	return ""
 }
 
 func (a *AuthDB) CheckPassByEmail(email, pass string) (string, error) {
@@ -100,7 +99,7 @@ func (a *AuthDB) CheckPassByEmail(email, pass string) (string, error) {
 }
 
 func (a *AuthDB) CheckPassByName(name, pass string) (string, error) {
-	row := a.db.QueryRow(`select password, userId from "auth" where name = $1`, name)
+	row := a.db.QueryRow(`select hash_password, user_id from "auth" where name = $1`, name)
 
 	var corrPass string
 	var id int
@@ -123,7 +122,7 @@ func (a *AuthDB) CheckPassByName(name, pass string) (string, error) {
 }
 
 func (a *AuthDB) CheckPassByPhone(phone, pass string) (string, error) {
-	row := a.db.QueryRow(`select password, userId from "auth" where phone = $1`, phone)
+	row := a.db.QueryRow(`select hash_password, user_id from "auth" where phone = $1`, phone)
 
 	var corrPass string
 	var id int

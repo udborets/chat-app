@@ -52,6 +52,7 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 	statusCode, msg, err := h.authBLogic.SignIn(inp)
 	if err != nil {
 		responses.NewResponse(ctx, statusCode, msg, err)
+		return
 	}
 
 	jwtToken := msg
