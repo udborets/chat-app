@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/lib/pq"
@@ -18,6 +19,7 @@ type IAuthDB interface {
 	CheckPassByEmail(email, pass string) (string, error)
 	CheckPassByPhone(email, pass string) (string, error)
 	GetUserByID(userId int) (models.User, error)
+	CheckUniqUser(user models.UserSignUpInput) (string, error)
 }
 
 type AuthDB struct {
@@ -48,6 +50,30 @@ func (a *AuthDB) AddUser(user models.User) (string, error) {
 		return "server couldn't add data to database", err
 	}
 	return "", nil
+}
+
+func (a *AuthDB) CheckUniqUser(user models.UserSignUpInput) (string, error) {
+	if msg := a.checkHelper("email", user.Email); msg != "" {
+		return msg, errors.New("server couldn't add row to column with unique columns")
+	} else if msg := a.checkHelper("name", user.Name); msg != "" {
+		return msg, errors.New("server couldn't add row to column with unique columns")
+	} else if msg := a.checkHelper("phone", user.Phone); msg != "" {
+		return msg, errors.New("server couldn't add row to column with unique columns")
+	}
+	return "", nil
+}
+
+func (a *AuthDB) checkHelper(column, variable string) string {
+	var has bool
+
+	query := fmt.Sprintf("select exists (select * from \"auth\" where %s=%s", column, variable)
+	row := a.db.QueryRow(query)
+
+	err := row.Scan(&has)
+	if err == nil {
+		return fmt.Sprintf("user with this %s: %s already registered", column, variable)
+	}
+	return ""
 }
 
 func (a *AuthDB) CheckPassByEmail(email, pass string) (string, error) {

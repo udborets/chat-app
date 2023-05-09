@@ -50,6 +50,11 @@ func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
 		return http.StatusBadRequest, "invalid password", errors.New("invalid password")
 	}
 
+	msg, err := b.database.CheckUniqUser(inp)
+	if err != nil {
+		return http.StatusBadRequest, msg, err
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(inp.Password), 10)
 	if err != nil {
 		return http.StatusInternalServerError, "server couldn't hash password", err
@@ -66,7 +71,7 @@ func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
 		LastSeen:  time.Now().Unix(),
 	}
 
-	msg, err := b.database.AddUser(user)
+	msg, err = b.database.AddUser(user)
 	if err != nil {
 		return http.StatusInternalServerError, msg, err
 	}
