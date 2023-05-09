@@ -24,7 +24,7 @@ func (h *AuthHTTP) Start() {
 	authAPI := app.Group("/auth")
 	authAPI.POST("/signup", h.userSignUp)
 	authAPI.POST("/signin", h.userSignIn)
-
+	authAPI.GET("/validate", h.validate)
 	app.Run(":1773")
 }
 
@@ -54,4 +54,8 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 
 	ctx.SetSameSite(http.SameSiteLaxMode)
 	ctx.SetCookie("Authorization", jwtToken, 3600*24*30, "", "", false, true)
+}
+
+func (h *AuthHTTP) validate(ctx *gin.Context) {
+
 }
