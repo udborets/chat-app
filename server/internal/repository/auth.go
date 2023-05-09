@@ -17,6 +17,7 @@ type IAuthDB interface {
 	CheckPassByName(name, pass string) (error, string)
 	CheckPassByEmail(email, pass string) (error, string)
 	CheckPassByPhone(email, pass string) (error, string)
+	GetUserByID(userId int) (error, models.User)
 }
 
 type AuthDB struct {
@@ -35,8 +36,9 @@ func NewAuthDB(config string) *AuthDB {
 func (a *AuthDB) AddUser(user models.User) (error, string) {
 	var addedId int
 
-	err := a.db.QueryRow(`insert into "user" (name, hash_password, email, phone, avatar_url, created_at) values ($1,$2,$3,$4,$5,$6) returning user_id`,
-		user.Name, user.HashPass, user.Email, user.Phone, user.AvatarURL, user.CreatedAt).Scan(&addedId)
+	err := a.db.QueryRow("insert into \"user\" (name, hash_password, email, phone, avatar_url, created_at, updated_at, last_seen) "+
+		"values ($1,$2,$3,$4,$5,$6,$7,$8) returning user_id", user.Name, user.HashPass, user.Email, user.Phone, user.AvatarURL,
+		user.CreatedAt, user.UpdatedAt, user.LastSeen).Scan(&addedId)
 	if err != nil {
 		return err, "error taking id from added user"
 	}
@@ -129,4 +131,17 @@ func createJWTToken(userId int) (error, string) {
 	}
 
 	return nil, tokenString
+}
+
+func (a *AuthDB) GetUserByID(userId int) (error, models.User) {
+	fmt.Println(userId)
+	row := a.db.QueryRow(`select * from "user" where user_id = $1`, userId)
+
+	user := models.User{}
+	err := row.Scan(&user.UserId, &user.Name, &user.HashPass, &user.Email, &user.Phone, &user.AvatarURL, &user.CreatedAt, &user.UpdatedAt, &user.LastSeen)
+	if err != nil {
+		return err, models.User{}
+	}
+
+	return nil, user
 }

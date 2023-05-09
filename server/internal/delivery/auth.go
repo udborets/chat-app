@@ -24,7 +24,7 @@ func (h *AuthHTTP) Start() {
 	authAPI := app.Group("/auth")
 	authAPI.POST("/signup", h.userSignUp)
 	authAPI.POST("/signin", h.userSignIn)
-	authAPI.GET("/validate", h.validate)
+	authAPI.GET("/validate", h.requireAuth, h.validate)
 	app.Run(":1773")
 }
 
@@ -56,6 +56,16 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 	ctx.SetCookie("Authorization", jwtToken, 3600*24*30, "", "", false, true)
 }
 
+func (h *AuthHTTP) requireAuth(ctx *gin.Context) {
+	tokenString, err := ctx.Cookie("Authorization")
+	if err != nil {
+		responses.NewResponse(ctx, http.StatusUnauthorized, err.Error())
+	}
+
+	h.authBLogic.ParseJWTToken(ctx, tokenString)
+}
+
 func (h *AuthHTTP) validate(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"message": "I'm logged in"})
+	user, _ := ctx.Get("user")
+	ctx.JSON(http.StatusOK, gin.H{"message": user})
 }

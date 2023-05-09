@@ -2,8 +2,8 @@ package models
 
 type Chat struct {
 	ChatId    string `json:"id"`
-	CreatedAt int    `json:"createdAt"`
-	UpdatedAt int    `json:"updatedAt"`
+	CreatedAt int    `json:"createdAt" binding:"required"`
+	UpdatedAt int    `json:"updatedAt" binding:"required"`
 }
 
 type UserChat struct {
