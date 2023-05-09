@@ -1,23 +1,15 @@
-package service
+package auth
 
 import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/udborets/chat-app/server/internal/models"
-	"github.com/udborets/chat-app/server/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
 	"regexp"
 	"time"
-)
-
-var (
-	validName  = regexp.MustCompile(`[a-zA-Zа-яА-ЯёЁ]{2,20}`)
-	validEmail = regexp.MustCompile(`\w{4,15}@\w{4,8}\.\w{2,5}`)
-	validPhone = regexp.MustCompile(`[0-9]{8,15}`)
-	validPass  = regexp.MustCompile(`[\w*!@#$%^&?]{8,30}`)
 )
 
 type IAuthBLogic interface {
@@ -27,14 +19,21 @@ type IAuthBLogic interface {
 }
 
 type AuthBLogic struct {
-	database repository.IAuthDB
+	database IAuthDB
 }
 
 func NewAuthBLogic(config string) *AuthBLogic {
 	return &AuthBLogic{
-		database: repository.NewAuthDB(config),
+		database: NewAuthDB(config),
 	}
 }
+
+var (
+	validName  = regexp.MustCompile(`[a-zA-Zа-яА-ЯёЁ]{2,20}`)
+	validEmail = regexp.MustCompile(`\w{4,15}@\w{4,8}\.\w{2,5}`)
+	validPhone = regexp.MustCompile(`[0-9]{8,15}`)
+	validPass  = regexp.MustCompile(`[\w*!@#$%^&?]{8,30}`)
+)
 
 func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
 	if !validName.MatchString(inp.Name) && !validPhone.MatchString(inp.Phone) && !validEmail.MatchString(inp.Email) {

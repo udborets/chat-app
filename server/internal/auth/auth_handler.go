@@ -1,20 +1,19 @@
-package delivery
+package auth
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/udborets/chat-app/server/internal/models"
 	"github.com/udborets/chat-app/server/internal/responses"
-	"github.com/udborets/chat-app/server/internal/service"
 	"net/http"
 )
 
 type AuthHTTP struct {
-	authBLogic service.IAuthBLogic
+	authBLogic IAuthBLogic
 }
 
 func NewHTTP(config string) *AuthHTTP {
 	return &AuthHTTP{
-		authBLogic: service.NewAuthBLogic(config),
+		authBLogic: NewAuthBLogic(config),
 	}
 }
 
