@@ -73,7 +73,7 @@ func (b *AuthBLogic) SignUp(ctx *gin.Context, inp models.UserSignUpInput) {
 		responses.NewResponse(ctx, http.StatusInternalServerError, msg)
 		return
 	}
-	responses.NewResponse(ctx, http.StatusOK, "add user to database")
+	ctx.JSON(http.StatusOK, gin.H{"message": "add user to database"})
 }
 
 func (b *AuthBLogic) SignIn(ctx *gin.Context, inp models.UserSignInInput) string {
@@ -100,7 +100,7 @@ func (b *AuthBLogic) SignIn(ctx *gin.Context, inp models.UserSignInInput) string
 		}
 		jwtToken = msg
 	}
-	responses.NewResponse(ctx, http.StatusOK, "jwt token created")
+	//ctx.JSON(http.StatusOK, gin.H{"message": "jwt token created"})
 
 	return jwtToken
 }

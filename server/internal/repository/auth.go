@@ -55,7 +55,6 @@ func (a *AuthDB) CheckPassByEmail(email, pass string) (error, string) {
 	var corrPass string
 	var id int
 
-	fmt.Println(row)
 	err := row.Scan(&corrPass, &id)
 	if err != nil {
 		return err, "no user with this email"
