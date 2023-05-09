@@ -57,5 +57,5 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 }
 
 func (h *AuthHTTP) validate(ctx *gin.Context) {
-	// validating
+	// validating ooo
 }
