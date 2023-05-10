@@ -9,5 +9,8 @@ func StartServer() {
 	config := "host=localhost port=5432 user=postgres password=1234 dbname=chat-app sslmode=disable"
 
 	app := auth.NewHTTP(config)
-	app.Start()
+
+	router := app.InitRoutes()
+
+	router.Run(":1773")
 }
