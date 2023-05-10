@@ -17,17 +17,6 @@ func NewHTTP(config string) *AuthHTTP {
 	}
 }
 
-//func (h *AuthHTTP) Start() {
-//	app := gin.Default()
-//
-//	authAPI := app.Group("/auth")
-//	authAPI.POST("/signup", h.userSignUp)
-//	authAPI.POST("/signin", h.userSignIn)
-//	authAPI.GET("/validate", h.requireAuth, h.validate)
-//
-//	app.Run(":1773")
-//}
-
 func (h *AuthHTTP) InitRoutes() *gin.Engine {
 	router := gin.Default()
 
