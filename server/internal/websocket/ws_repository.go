@@ -2,8 +2,14 @@ package websocket
 
 import "database/sql"
 
-type IWsRepository interface{}
+type IWebsRepository interface{}
 
-type WsRepository struct {
+type WebsRepository struct {
 	db *sql.DB
+}
+
+func NewWebsRepository() *WebsRepository {
+	return &WebsRepository{
+		db: nil,
+	}
 }

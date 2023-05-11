@@ -19,6 +19,7 @@ func NewHTTP(config string) *AuthHTTP {
 
 func (h *AuthHTTP) InitRoutes(router *gin.Engine) {
 	authAPI := router.Group("/auth")
+
 	authAPI.POST("/signup", h.userSignUp)
 	authAPI.POST("/signin", h.userSignIn)
 	authAPI.GET("/validate", h.requireAuth, h.validate)

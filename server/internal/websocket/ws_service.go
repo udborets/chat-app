@@ -1,7 +1,13 @@
 package websocket
 
-type IWsBLogic interface{}
+type IWebsBLogic interface{}
 
-type WsBLogic struct {
-	wsRepository IWsRepository
+type WebsBLogic struct {
+	websRepository IWebsRepository
+}
+
+func NewWebsBLogic() *WebsBLogic {
+	return &WebsBLogic{
+		websRepository: NewWebsRepository(),
+	}
 }
