@@ -23,9 +23,9 @@ type AuthBLogic struct {
 	database repository.IAuthDB
 }
 
-func NewAuthBLogic(config string) *AuthBLogic {
+func NewAuthBLogic() *AuthBLogic {
 	return &AuthBLogic{
-		database: repository.NewAuthDB(config),
+		database: repository.NewAuthDB(),
 	}
 }
 

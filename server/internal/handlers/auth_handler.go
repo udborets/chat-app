@@ -12,9 +12,9 @@ type AuthHTTP struct {
 	authBLogic service.IAuthBLogic
 }
 
-func NewHTTP(config string) *AuthHTTP {
+func NewHTTP() *AuthHTTP {
 	return &AuthHTTP{
-		authBLogic: service.NewAuthBLogic(config),
+		authBLogic: service.NewAuthBLogic(),
 	}
 }
 

@@ -8,7 +8,6 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/udborets/chat-app/server/internal/models"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 	"os"
 	"time"
 )
@@ -26,12 +25,8 @@ type AuthDB struct {
 	db *sql.DB
 }
 
-func NewAuthDB(config string) *AuthDB {
-	db, err := sql.Open("postgres", config)
-	if err != nil {
-		log.Fatalf(err.Error())
-	}
-	return &AuthDB{db: db}
+func NewAuthDB() *AuthDB {
+	return &AuthDB{db: database}
 }
 
 func (a *AuthDB) AddUser(user models.User) (string, error) {

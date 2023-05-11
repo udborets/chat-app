@@ -10,6 +10,6 @@ type WebsRepository struct {
 
 func NewWebsRepository() *WebsRepository {
 	return &WebsRepository{
-		db: nil,
+		db: database,
 	}
 }
