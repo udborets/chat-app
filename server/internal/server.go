@@ -11,10 +11,12 @@ func StartServer() {
 	config := "host=localhost port=5432 user=postgres password=1234 dbname=chat-app sslmode=disable"
 	repository.InitDB(config)
 
-	app := handlers.NewHTTP()
+	auth := handlers.NewHTTP()
+	ws := handlers.NewWebsHandler()
 
 	router := gin.Default()
-	app.InitRoutes(router)
+	auth.InitRoutes(router)
+	ws.InitWebsock(router)
 
 	router.Run(":1773")
 }
