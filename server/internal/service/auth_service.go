@@ -1,10 +1,11 @@
-package auth
+package service
 
 import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/udborets/chat-app/server/internal/models"
+	"github.com/udborets/chat-app/server/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
 	"os"
@@ -19,12 +20,12 @@ type IAuthBLogic interface {
 }
 
 type AuthBLogic struct {
-	database IAuthDB
+	database repository.IAuthDB
 }
 
 func NewAuthBLogic(config string) *AuthBLogic {
 	return &AuthBLogic{
-		database: NewAuthDB(config),
+		database: repository.NewAuthDB(config),
 	}
 }
 

@@ -1,17 +1,18 @@
-package websocket
+package handlers
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	websocket2 "github.com/udborets/chat-app/server/internal/service"
 )
 
 type WebsHandler struct {
-	websBLogic IWebsBLogic
+	websBLogic websocket2.IWebsBLogic
 }
 
 func NewWebsHandler() *WebsHandler {
 	return &WebsHandler{
-		websBLogic: NewWebsBLogic(),
+		websBLogic: websocket2.NewWebsBLogic(),
 	}
 }
 

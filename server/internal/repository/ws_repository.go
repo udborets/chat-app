@@ -1,4 +1,4 @@
-package websocket
+package repository
 
 import "database/sql"
 
