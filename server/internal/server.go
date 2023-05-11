@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/udborets/chat-app/server/internal/auth"
 )
 
@@ -10,7 +11,8 @@ func StartServer() {
 
 	app := auth.NewHTTP(config)
 
-	router := app.InitRoutes()
+	router := gin.Default()
+	app.InitRoutes(router)
 
 	router.Run(":1773")
 }
