@@ -3,104 +3,25 @@
 @tailwind utilities;
 
 @layer components {
-  .text-main {
-    @apply text-[var(--text-main)];
-  }
-
-  .bg-input {
-    @apply bg-[var(--bg-input)];
-  }
-
-  .bg-main {
-    @apply bg-[var(--bg-input)];
-  }
-
-  .bg-secondary {
-    @apply bg-[var(--bg-secondary)];
-  }
-
-  .bg-secondary-hover {
-    @apply bg-[var(--bg-secondary-hover)];
-  }
-
-  .bg-secondary-lighter {
-    @apply bg-[var(--bg-secondary-lighter)];
-  }
-
-  .bg-disabled {
-    @apply bg-[var(--bg-disabled)];
-  }
-
-  .bg-color {
-    @apply bg-[var(--bg-color)];
-  }
-
-  .bg-color-active {
-    @apply bg-[var(--bg-color-active)];
-  }
-
-  .bg-color-hover {
-    @apply bg-[var(--bg-color-hover)];
-  }
-
-  .bg-chat {
-    @apply bg-[var(--bg-chat)];
-  }
-
-  .bg-message {
-    @apply bg-[var(--bg-message)];
-  }
-
-  .scrollBar {
-    &::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0);
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.377);
-      border-radius: 20px;
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.719);
-      }
-
-      &:active {
-        background-color: rgb(0, 0, 0);
-      }
-    }
-  }
 }
 
 :root {
-  --bg-main: rgb(23, 23, 23);
-  --bg-secondary: rgb(34, 34, 34);
-  --bg-secondary-lighter: rgb(43, 43, 43);
-  --bg-secondary-hover: rgb(56, 56, 56);
-  --text-main: rgb(215, 215, 215);
-  --bg-chat: rgb(27,27, 27);
-  --bg-message: rgb(70, 70, 70);
-  --bg-color: #6124d3;
-  --bg-color-hover: rgb(70, 29, 145);
-  --bg-color-active: rgb(47, 18, 102);
-  --bg-input: rgb(10, 10, 10);
 }
 
 html,
-body,
-#__next {
+body {
   width: 100%;
   height: 100%;
 }
 
-html {
-  background: var(--bg-main);
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #__next {
-  display: flex;
-  justify-content: center;
+  width: 100%;
+  height: 100%;
+  max-width: 900px;
 }

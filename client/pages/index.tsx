@@ -1,12 +1,18 @@
-import { FC } from "react";
-
-import PageLayout from "@/layouts/PageLayout/PageLayout";
+import Head from 'next/head';
+import { FC } from 'react';
 
 const HomePage: FC = () => {
   return (
-    <PageLayout title="Home" className="w-full h-full flex">
-
-    </PageLayout>
+    <>
+      <Head>
+        <title>
+        </title>
+      </Head>
+      <main className='w-full h-full'>
+        <div>
+        </div>
+      </main>
+    </>
   )
 }
 
