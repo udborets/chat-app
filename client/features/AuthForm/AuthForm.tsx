@@ -1,7 +1,8 @@
-import { FC, useCallback, useEffect, useMemo, useState } from "react"
-import { AuthTypes } from "./models"
+import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+
 import AuthInput from "./AuthInput/AuthInput";
+import { AuthTypes } from "./models";
 
 const AuthForm = () => {
   const [currentAuthType, setCurrentAuthType] = useState<AuthTypes>(AuthTypes.REGISTRATION);

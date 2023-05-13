@@ -1,5 +1,6 @@
-import AuthForm from '@/features/AuthForm/AuthForm'
-import { FC } from 'react'
+import { FC } from 'react';
+
+import AuthForm from '@/features/AuthForm/AuthForm';
 
 const AuthPage: FC = () => {
   return (
