@@ -2,7 +2,7 @@ package models
 
 type UserSignUpInput struct {
 	Name      string `json:"name" binding:"required"`
-	Email     string `json:"email" binding:"required"`
+	Email     string `json:"email"`
 	Phone     string `json:"phone"`
 	Password  string `json:"password" binding:"required"`
 	AvatarURL string `json:"avatarURL"`
@@ -12,7 +12,7 @@ type User struct {
 	UserId    string `json:"id"`
 	Name      string `json:"name" binding:"required"`
 	HashPass  string `json:"password" binding:"required"`
-	Email     string `json:"email" binding:"required"`
+	Email     string `json:"email"`
 	Phone     string `json:"phone"`
 	AvatarURL string `json:"avatarURL"`
 	CreatedAt int64  `json:"createdAt" binding:"required"`
@@ -21,6 +21,8 @@ type User struct {
 }
 
 type UserSignInInput struct {
-	Login    string `json:"login"`
+	Email    string `json:"email"`
+	Name     string `json:"name"`
+	Phone    string `json:"phone"`
 	Password string `json:"password" binding:"required"`
 }
