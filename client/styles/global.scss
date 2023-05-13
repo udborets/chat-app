@@ -3,6 +3,17 @@
 @tailwind utilities;
 
 @layer components {
+  .input {
+    @apply outline outline-1 rounded-[6px] px-2 py-1 font-normal;
+  }
+
+  .inputLabel {
+    @apply font-bold flex flex-col gap-1;
+  }
+
+  .rounded-button {
+    @apply rounded-[8px];
+  }
 }
 
 :root {
@@ -23,5 +34,5 @@ body {
 #__next {
   width: 100%;
   height: 100%;
-  max-width: 900px;
+  max-width: 1200px;
 }
