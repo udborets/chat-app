@@ -1,6 +1,12 @@
+# idea of IDE
 .idea
 
+# modules for golang
 go.mod
 go.sum
 
+# env files
 .env
+
+# makefile
+Makefile

@@ -37,13 +37,13 @@ var (
 )
 
 func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
-	if !validName.MatchString(inp.Name) && !validPhone.MatchString(inp.Phone) && !validEmail.MatchString(inp.Email) {
-		return http.StatusBadRequest, "invalid login", errors.New("invalid login")
-	} else if !validName.MatchString(inp.Name) {
+	if !validName.MatchString(inp.Name) {
 		return http.StatusBadRequest, "invalid name", errors.New("invalid name")
-	} else if !validEmail.MatchString(inp.Email) {
+	}
+	if inp.Email != "" && !validEmail.MatchString(inp.Email) {
 		return http.StatusBadRequest, "invalid email", errors.New("invalid email")
-	} else if inp.Phone != "" && !validPhone.MatchString(inp.Phone) {
+	}
+	if inp.Phone != "" && !validPhone.MatchString(inp.Phone) {
 		return http.StatusBadRequest, "invalid phone", errors.New("invalid phone")
 	}
 	if !validPass.MatchString(inp.Password) {
@@ -80,24 +80,26 @@ func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
 
 func (b *AuthBLogic) SignIn(inp models.UserSignInInput) (int, string, error) {
 	var jwtToken string
-	if validEmail.MatchString(inp.Login) {
-		msg, err := b.database.CheckPassByEmail(inp.Login, inp.Password)
+	if inp.Email != "" && validEmail.MatchString(inp.Email) {
+		msg, err := b.database.CheckPassByEmail(inp.Email, inp.Password)
 		if err != nil {
 			return http.StatusUnauthorized, msg, err
 		}
 		jwtToken = msg
-	} else if validName.MatchString(inp.Login) {
-		msg, err := b.database.CheckPassByName(inp.Login, inp.Password)
+	} else if inp.Name != "" && validName.MatchString(inp.Name) {
+		msg, err := b.database.CheckPassByName(inp.Name, inp.Password)
 		if err != nil {
 			return http.StatusUnauthorized, msg, err
 		}
 		jwtToken = msg
-	} else if validPhone.MatchString(inp.Login) {
-		msg, err := b.database.CheckPassByPhone(inp.Login, inp.Password)
+	} else if inp.Phone != "" && validPhone.MatchString(inp.Phone) {
+		msg, err := b.database.CheckPassByPhone(inp.Phone, inp.Password)
 		if err != nil {
 			return http.StatusUnauthorized, msg, err
 		}
 		jwtToken = msg
+	} else {
+		return http.StatusBadRequest, "incorrect input data, check email/name/phone", errors.New("incorrect input data, check email/name/phone")
 	}
 
 	return http.StatusOK, jwtToken, nil
