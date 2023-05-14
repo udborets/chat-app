@@ -1,8 +1,10 @@
 package service
 
 import (
+	"errors"
 	"github.com/udborets/chat-app/server/internal/models"
 	"github.com/udborets/chat-app/server/internal/repository"
+	"net/http"
 	"time"
 )
 
@@ -30,8 +32,17 @@ func (b *WebsBLogic) GetRoomsByUserId(userId int) (interface{}, string, error) {
 }
 
 func (b *WebsBLogic) CreateRoom(usersId []int) (int, string, error) {
+	if len(usersId) < 2 {
+		return http.StatusBadRequest, "not enough user id, minimum is 2", errors.New("not enough user id, minimum is 2")
+	}
+
+	msg, err := b.websRepository.CheckUsers(usersId)
+	if err != nil {
+		return http.StatusBadRequest, msg, err
+	}
+
 	chat := models.Chat{
-		LastMessage: "",
+		LastMessage: nil,
 		CreatedAt:   time.Now().Unix(),
 		UpdatedAt:   time.Now().Unix(),
 	}
@@ -46,5 +57,5 @@ func (b *WebsBLogic) CreateRoom(usersId []int) (int, string, error) {
 		return 0, msg, err
 	}
 
-	return chatId, "successful", nil
+	return chatId, "successfully create new chat", nil
 }

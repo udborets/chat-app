@@ -1,11 +1,11 @@
 package models
 
 type Message struct {
-	MessageId string `json:"id"`
+	MessageId int    `json:"message_id"`
 	Text      string `json:"text" binding:"required"`
-	IsSeen    bool   `json:"isSeen" binding:"required"`
-	CreatedAt int    `json:"createdAt" binding:"required"`
-	UpdatedAt int    `json:"updatedAt" binding:"required"`
+	IsSeen    bool   `json:"is_seen" binding:"required"`
+	CreatedAt int64  `json:"created_at" binding:"required"`
+	UpdatedAt int64  `json:"updated_at" binding:"required"`
 }
 
 type ChatMessage struct {

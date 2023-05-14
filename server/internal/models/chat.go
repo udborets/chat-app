@@ -1,20 +1,20 @@
 package models
 
 type Chat struct {
-	ChatId      string `json:"id"`
-	LastMessage string `json:"lastMessage"`
-	CreatedAt   int64  `json:"createdAt" binding:"required"`
-	UpdatedAt   int64  `json:"updatedAt" binding:"required"`
+	ChatId      string      `json:"chat_id"`
+	LastMessage interface{} `json:"last_message"`
+	CreatedAt   int64       `json:"created_at" binding:"required"`
+	UpdatedAt   int64       `json:"updated_at" binding:"required"`
 }
 
 type UserChat struct {
-	UserId string `json:"user_id"`
-	ChatId string `json:"chat_id"`
+	UserId int `json:"user_id"`
+	ChatId int `json:"chat_id"`
 }
 
 type Friends struct {
-	UserId   string `json:"user_id"`
-	FriendId string `json:"friend_id"`
+	UserId   int `json:"user_id"`
+	FriendId int `json:"friend_id"`
 }
 
 type ChatCreateInput struct {

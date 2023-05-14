@@ -37,13 +37,16 @@ var (
 )
 
 func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
+	if inp.Email == nil && inp.Phone == nil {
+		return http.StatusBadRequest, "no email and phone, at least one is required", errors.New("no email and phone, at least one is required")
+	}
 	if !validName.MatchString(inp.Name) {
 		return http.StatusBadRequest, "invalid name", errors.New("invalid name")
 	}
-	if inp.Email != "" && !validEmail.MatchString(inp.Email) {
+	if inp.Email != nil && !validEmail.MatchString(inp.Email.(string)) {
 		return http.StatusBadRequest, "invalid email", errors.New("invalid email")
 	}
-	if inp.Phone != "" && !validPhone.MatchString(inp.Phone) {
+	if inp.Phone != nil && !validPhone.MatchString(inp.Phone.(string)) {
 		return http.StatusBadRequest, "invalid phone", errors.New("invalid phone")
 	}
 	if !validPass.MatchString(inp.Password) {
@@ -68,7 +71,6 @@ func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
 		AvatarURL: inp.AvatarURL,
 		CreatedAt: time.Now().Unix(),
 		UpdatedAt: time.Now().Unix(),
-		LastSeen:  time.Now().Unix(),
 	}
 
 	msg, err = b.database.AddUser(user)

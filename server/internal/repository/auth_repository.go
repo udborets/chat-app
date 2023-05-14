@@ -14,6 +14,8 @@ import (
 
 type IAuthDB interface {
 	AddUser(user models.User) (string, error)
+	AddUserWithNoEmail(user models.User) (string, error)
+	AddUserWithNoPhone(user models.User) (string, error)
 	CheckPassByName(name, pass string) (string, error)
 	CheckPassByEmail(email, pass string) (string, error)
 	CheckPassByPhone(email, pass string) (string, error)
@@ -32,9 +34,9 @@ func NewAuthDB() *AuthDB {
 func (a *AuthDB) AddUser(user models.User) (string, error) {
 	var addedId int
 
-	err := a.db.QueryRow("insert into \"user\" (name, hash_password, email, phone, avatar_url, created_at, updated_at, last_seen) "+
-		"values ($1,$2,$3,$4,$5,$6,$7,$8) returning user_id", user.Name, user.HashPass, user.Email, user.Phone, user.AvatarURL,
-		user.CreatedAt, user.UpdatedAt, user.LastSeen).Scan(&addedId)
+	err := a.db.QueryRow("insert into \"users\" (name, hash_password, email, phone, avatar_url, created_at, updated_at) "+
+		"values ($1,$2,$3,$4,$5,$6,$7) returning id", user.Name, user.HashPass, user.Email, user.Phone, user.AvatarURL,
+		user.CreatedAt, user.UpdatedAt).Scan(&addedId)
 	if err != nil {
 		return "server couldn't add data to database", err
 	}
@@ -47,25 +49,67 @@ func (a *AuthDB) AddUser(user models.User) (string, error) {
 	return "", nil
 }
 
+func (a *AuthDB) AddUserWithNoEmail(user models.User) (string, error) {
+	var addedId int
+
+	err := a.db.QueryRow("insert into \"users\" (name, hash_password, email, phone, avatar_url, created_at, updated_at) "+
+		"values ($1,$2,$3,$4,$5,$6,$7) returning id", user.Name, user.HashPass, nil, user.Phone, user.AvatarURL,
+		user.CreatedAt, user.UpdatedAt).Scan(&addedId)
+	if err != nil {
+		return "server couldn't add data to database", err
+	}
+
+	_, err = a.db.Exec(`insert into "auth" (name, email, phone, hash_password, user_id) values ($1,$2,$3,$4,$5)`,
+		user.Name, nil, user.Phone, user.HashPass, addedId)
+	if err != nil {
+		return "server couldn't add data to database", err
+	}
+	return "", nil
+}
+
+func (a *AuthDB) AddUserWithNoPhone(user models.User) (string, error) {
+	var addedId int
+
+	err := a.db.QueryRow("insert into \"users\" (name, hash_password, email, phone, avatar_url, created_at, updated_at) "+
+		"values ($1,$2,$3,$4,$5,$6,$7) returning id", user.Name, user.HashPass, user.Email, nil, user.AvatarURL,
+		user.CreatedAt, user.UpdatedAt).Scan(&addedId)
+	if err != nil {
+		return "server couldn't add data to database", err
+	}
+
+	_, err = a.db.Exec(`insert into "auth" (name, email, phone, hash_password, user_id) values ($1,$2,$3,$4,$5)`,
+		user.Name, user.Email, nil, user.HashPass, addedId)
+	if err != nil {
+		return "server couldn't add data to database", err
+	}
+	return "", nil
+}
+
 func (a *AuthDB) CheckUniqUser(user models.UserSignUpInput) (string, error) {
 	var user_id int
 
-	row := a.db.QueryRow("select user_id from \"auth\" where email=$1", user.Email)
-	row.Scan(&user_id)
-	if user_id != 0 {
-		return fmt.Sprintf("user with this email: %s already registered", user.Email), errors.New("server couldn't add row to unique column")
+	if user.Name != "" {
+		row := a.db.QueryRow("select user_id from \"auth\" where name=$1", user.Name)
+		row.Scan(&user_id)
+		if user_id != 0 {
+			return fmt.Sprintf("user with this name: %s already registered", user.Name), errors.New("server couldn't add row to unique column")
+		}
 	}
 
-	row = a.db.QueryRow("select user_id from \"auth\" where name=$1", user.Name)
-	row.Scan(&user_id)
-	if user_id != 0 {
-		return fmt.Sprintf("user with this name: %s already registered", user.Name), errors.New("server couldn't add row to unique column")
+	if user.Email != nil {
+		row := a.db.QueryRow("select user_id from \"auth\" where email=$1", user.Email)
+		row.Scan(&user_id)
+		if user_id != 0 {
+			return fmt.Sprintf("user with this email: %s already registered", user.Email), errors.New("server couldn't add row to unique column")
+		}
 	}
 
-	row = a.db.QueryRow("select user_id from \"auth\" where phone=$1", user.Phone)
-	row.Scan(&user_id)
-	if user_id != 0 {
-		return fmt.Sprintf("user with this phone: %s already registered", user.Phone), errors.New("server couldn't add row to unique column")
+	if user.Phone != nil {
+		row := a.db.QueryRow("select user_id from \"auth\" where phone=$1", user.Phone)
+		row.Scan(&user_id)
+		if user_id != 0 {
+			return fmt.Sprintf("user with this phone: %s already registered", user.Phone), errors.New("server couldn't add row to unique column")
+		}
 	}
 	return "", nil
 }
@@ -154,10 +198,11 @@ func createJWTToken(userId int) (string, error) {
 
 func (a *AuthDB) GetUserByID(userId int) (models.User, error) {
 	fmt.Println(userId)
-	row := a.db.QueryRow(`select * from "user" where user_id = $1`, userId)
+	row := a.db.QueryRow(`select * from "users" where id = $1`, userId)
 
 	user := models.User{}
-	err := row.Scan(&user.UserId, &user.Name, &user.HashPass, &user.Email, &user.Phone, &user.AvatarURL, &user.CreatedAt, &user.UpdatedAt, &user.LastSeen)
+	err := row.Scan(&user.UserId, &user.Name, &user.HashPass, &user.Email, &user.Phone, &user.AvatarURL,
+		&user.LastSeen, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return models.User{}, err
 	}

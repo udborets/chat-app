@@ -1,23 +1,23 @@
 package models
 
 type UserSignUpInput struct {
-	Name      string `json:"name" binding:"required"`
-	Email     string `json:"email"`
-	Phone     string `json:"phone"`
-	Password  string `json:"password" binding:"required"`
-	AvatarURL string `json:"avatarURL"`
+	Name      string      `json:"name" binding:"required"`
+	Email     interface{} `json:"email"`
+	Phone     interface{} `json:"phone"`
+	Password  string      `json:"password" binding:"required"`
+	AvatarURL interface{} `json:"avatarURL"`
 }
 
 type User struct {
-	UserId    string `json:"id"`
-	Name      string `json:"name" binding:"required"`
-	HashPass  string `json:"password" binding:"required"`
-	Email     string `json:"email"`
-	Phone     string `json:"phone"`
-	AvatarURL string `json:"avatarURL"`
-	CreatedAt int64  `json:"createdAt" binding:"required"`
-	UpdatedAt int64  `json:"updatedAt" binding:"required"`
-	LastSeen  int64  `json:"lastSeen" binding:"required"`
+	UserId    int         `json:"id"`
+	Name      string      `json:"name" binding:"required"`
+	HashPass  string      `json:"hash_password" binding:"required"`
+	Email     interface{} `json:"email"`
+	Phone     interface{} `json:"phone"`
+	AvatarURL interface{} `json:"avatar_url"`
+	LastSeen  interface{} `json:"last_seen"`
+	CreatedAt int64       `json:"created_at" binding:"required"`
+	UpdatedAt int64       `json:"updated_at" binding:"required"`
 }
 
 type UserSignInInput struct {

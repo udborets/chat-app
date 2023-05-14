@@ -61,11 +61,13 @@ func (h *AuthHTTP) requireAuth(ctx *gin.Context) {
 	tokenString, err := ctx.Cookie("Authorization")
 	if err != nil {
 		responses.NewResponse(ctx, http.StatusUnauthorized, err.Error(), err)
+		return
 	}
 
 	user, statusCode, msg, err := h.authBLogic.ParseJWTToken(tokenString)
 	if err != nil {
 		responses.NewResponse(ctx, statusCode, msg, err)
+		return
 	}
 
 	ctx.Set("user", user.(models.User))
