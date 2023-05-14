@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Image from "next/image";
+import { FC, useEffect, useState } from "react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
+import manNoAvatar from '@/assets/images/manNoAvatar.png';
 import AuthInput from "./AuthInput/AuthInput";
 import { AuthTypes } from "./models";
-import manNoAvatar from '@/assets/images/manNoAvatar.png';
 
-const AuthForm = () => {
+const AuthForm: FC = () => {
   const [currentAuthType, setCurrentAuthType] = useState<AuthTypes>(AuthTypes.REGISTRATION);
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const {
@@ -14,7 +14,6 @@ const AuthForm = () => {
     handleSubmit,
     formState,
     reset,
-
   } = useForm({
     defaultValues: {
       phone: '',
@@ -42,7 +41,6 @@ const AuthForm = () => {
     setIsByEmail(true);
     setIsByPhone(false);
   }, [currentAuthType])
-
   return (
     <>
       <form
@@ -57,7 +55,7 @@ const AuthForm = () => {
               register={register}
               options={{
                 required: 'Name is required',
-                pattern: /[a-zA-Z]{2,20}/,
+                pattern: /[a-zA-Zа-яА-Я]{2,20}/,
               }}
               labelText="Name"
               errorMessage="Name should include from 2 to 20 symbols"
