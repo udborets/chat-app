@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import Image from "next/image";
 
 import AuthInput from "./AuthInput/AuthInput";
 import { AuthTypes } from "./models";
+import manNoAvatar from '@/assets/images/manNoAvatar.png';
 
 const AuthForm = () => {
   const [currentAuthType, setCurrentAuthType] = useState<AuthTypes>(AuthTypes.REGISTRATION);
+  const [avatarPreview, setAvatarPreview] = useState<string>('');
   const {
     register,
     handleSubmit,
@@ -61,16 +64,38 @@ const AuthForm = () => {
               placeholder="Enter your name..."
               type="text"
             />
-            <AuthInput
-              errors={formState.errors}
-              name="avatar"
-              register={register}
-              errorMessage="Enter valid avatar"
-              options={{}}
-              labelText="Avatar"
-              placeholder=""
-              type="file"
-            />
+            <div className="flex">
+              <AuthInput
+                errors={formState.errors}
+                name="avatar"
+                register={register}
+                errorMessage="Enter valid avatar"
+                options={{
+                  onChange: (e) => {
+                    try {
+                      if (!e.target.files[0]) {
+                        setAvatarPreview(manNoAvatar.src);
+                        return
+                      }
+                      setAvatarPreview(URL.createObjectURL(e.target.files[0]));
+                    }
+                    catch (e) {
+                      console.error(e);
+                    }
+                  }
+                }}
+                labelText="Avatar"
+                placeholder=""
+                type="file"
+              />
+              <Image
+                className="w-[80px] h-[80px] rounded-[50%]"
+                src={!!avatarPreview ? avatarPreview : manNoAvatar}
+                alt="Avatar image"
+                width={80}
+                height={80}
+              />
+            </div>
           </>
           : ''}
         {isByEmail
@@ -150,7 +175,7 @@ const AuthForm = () => {
           : ''}
         <input
           type="submit"
-          disabled={(!isByEmail && !isByPhone) || !formState.isValid}
+          disabled={(!isByEmail && !isByPhone)}
           className="p-2 rounded-button outline disabled:bg-slate-600 duration-200 transition-all"
           value={currentAuthType === AuthTypes.AUTHORIZATION
             ? 'Log in!'
