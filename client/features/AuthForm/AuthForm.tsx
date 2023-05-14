@@ -45,7 +45,7 @@ const AuthForm: FC = () => {
     <>
       <form
         onSubmit={handleSubmit(submit)}
-        className="p-2 pc:p-4 flex flex-col gap-3 max-w-[400px] rounded-[10px] "
+        className="p-4 flex flex-col gap-3 max-w-[400px] w-full rounded-[10px] outline "
       >
         {currentAuthType === AuthTypes.REGISTRATION
           ? <>
@@ -62,38 +62,36 @@ const AuthForm: FC = () => {
               placeholder="Enter your name..."
               type="text"
             />
-            <div className="flex">
-              <AuthInput
-                errors={formState.errors}
-                name="avatar"
-                register={register}
-                errorMessage="Enter valid avatar"
-                options={{
-                  onChange: (e) => {
-                    try {
-                      if (!e.target.files[0]) {
-                        setAvatarPreview(manNoAvatar.src);
-                        return
-                      }
-                      setAvatarPreview(URL.createObjectURL(e.target.files[0]));
+            <Image
+              className="w-[80px] h-[80px] rounded-[50%]"
+              src={!!avatarPreview ? avatarPreview : manNoAvatar}
+              alt="Avatar image"
+              width={80}
+              height={80}
+            />
+            <AuthInput
+              errors={formState.errors}
+              name="avatar"
+              register={register}
+              errorMessage="Enter valid avatar"
+              options={{
+                onChange: (e) => {
+                  try {
+                    if (!e.target.files[0]) {
+                      setAvatarPreview(manNoAvatar.src);
+                      return
                     }
-                    catch (e) {
-                      console.error(e);
-                    }
+                    setAvatarPreview(URL.createObjectURL(e.target.files[0]));
                   }
-                }}
-                labelText="Avatar"
-                placeholder=""
-                type="file"
-              />
-              <Image
-                className="w-[80px] h-[80px] rounded-[50%]"
-                src={!!avatarPreview ? avatarPreview : manNoAvatar}
-                alt="Avatar image"
-                width={80}
-                height={80}
-              />
-            </div>
+                  catch (e) {
+                    console.error(e);
+                  }
+                }
+              }}
+              labelText="Avatar"
+              placeholder=""
+              type="file"
+            />
           </>
           : ''}
         {isByEmail
