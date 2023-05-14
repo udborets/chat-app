@@ -31,9 +31,9 @@ var upgrader = websocket.Upgrader{
 func (h *WebsHandler) InitWebsock(router *gin.Engine) {
 	websock := router.Group("/ws")
 
-	websock.GET("/rooms/:userId", h.getRooms)
-	websock.GET("/newRoom", h.newRoom)
-	websock.GET("/joinRoom/:roomId", h.joinRoom)
+	websock.GET("/chats/:userId", h.getRooms)
+	websock.GET("/newChat", h.newRoom)
+	websock.GET("/joinChat/:chatId", h.joinRoom)
 }
 
 func (h *WebsHandler) getRooms(ctx *gin.Context) {
@@ -53,15 +53,19 @@ func (h *WebsHandler) getRooms(ctx *gin.Context) {
 
 func (h *WebsHandler) newRoom(ctx *gin.Context) {
 	var inp models.ChatCreateInput
+
 	if err := ctx.BindJSON(&inp); err != nil {
-		responses.NewResponse(ctx, http.StatusBadRequest, "newRoom receive [] of users_id", err)
+		responses.NewResponse(ctx, http.StatusBadRequest, "newRoom receive array of user's_id", err)
 		return
 	}
 
 	chatId, msg, err := h.websBLogic.CreateRoom(inp.Users)
 	if err != nil {
 		responses.NewResponse(ctx, http.StatusBadRequest, msg, err)
+		return
 	}
+
+	responses.NewResponse(ctx, http.StatusOK, msg, err)
 
 	redirectUrl := fmt.Sprintf("http://localhost:%s/ws/joinRoom/%d", os.Getenv("PORT"), chatId)
 	ctx.Redirect(http.StatusFound, redirectUrl)
