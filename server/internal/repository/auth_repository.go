@@ -198,10 +198,11 @@ func createJWTToken(userId int) (string, error) {
 
 func (a *AuthDB) GetUserByID(userId int) (models.User, error) {
 	fmt.Println(userId)
-	row := a.db.QueryRow(`select * from "users" where user_id = $1`, userId)
+	row := a.db.QueryRow(`select * from "users" where id = $1`, userId)
 
 	user := models.User{}
-	err := row.Scan(&user.UserId, &user.Name, &user.HashPass, &user.Email, &user.Phone, &user.AvatarURL, &user.CreatedAt, &user.UpdatedAt, &user.LastSeen)
+	err := row.Scan(&user.UserId, &user.Name, &user.HashPass, &user.Email, &user.Phone, &user.AvatarURL,
+		&user.LastSeen, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return models.User{}, err
 	}

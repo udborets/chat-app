@@ -15,9 +15,9 @@ type User struct {
 	Email     interface{} `json:"email"`
 	Phone     interface{} `json:"phone"`
 	AvatarURL interface{} `json:"avatar_url"`
+	LastSeen  interface{} `json:"last_seen"`
 	CreatedAt int64       `json:"created_at" binding:"required"`
 	UpdatedAt int64       `json:"updated_at" binding:"required"`
-	LastSeen  int64       `json:"last_seen" binding:"required"`
 }
 
 type UserSignInInput struct {
