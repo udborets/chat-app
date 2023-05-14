@@ -11,6 +11,7 @@ const AuthInput: FC<AuthInputProps> = ({ name, errors, register, options, labelT
       {labelText}
       <input
         type={type}
+        accept={type === 'file' ? 'image/*' : '*'}
         className="input"
         placeholder={placeholder}
         {...register(name, options)}
