@@ -49,12 +49,6 @@ const AuthForm: FC = () => {
         onSubmit={handleSubmit(submit)}
         className="p-4 flex flex-col gap-3 max-w-[400px] w-full rounded-[10px] outline "
       >
-        <button onClick={() => console.log(userState)}>
-          a
-        </button>
-        <button onClick={() => setState({ email: 'jajaja' })}>
-          ff
-        </button>
         {currentAuthType === AuthTypes.REGISTRATION
           ? <>
             <AuthInput
