@@ -7,7 +7,7 @@ import Messages from "./Messages/Messages";
 const ChatBody: FC = ({ }) => {
   return (
     <div
-      className="flex flex-col "
+      className="flex flex-col w-full"
     >
       <ChatBar />
       <Messages />
