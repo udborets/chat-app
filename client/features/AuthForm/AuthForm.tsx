@@ -64,28 +64,33 @@ const AuthForm: FC = () => {
               placeholder="Enter your name..."
               type="text"
             />
-            <Image
-              className="w-[80px] h-[80px] rounded-[50%]"
-              src={!!avatarPreview ? avatarPreview : manNoAvatar}
-              alt="Avatar image"
-              width={80}
-              height={80}
-            />
-            <input
-              type="file"
-              onChange={(e) => {
-                try {
-                  if (e.target.files && e.target.files[0]) {
-                    setAvatarPreview(URL.createObjectURL(e.target.files[0]));
-                    return
+            <label
+              htmlFor="avatar"
+            >
+              <Image
+                className="w-[80px] h-[80px] rounded-[50%] mb-[10px]"
+                src={!!avatarPreview ? avatarPreview : manNoAvatar}
+                alt="Avatar image"
+                width={80}
+                height={80}
+              />
+              <input
+                type="file"
+                name='avatar'
+                onChange={(e) => {
+                  try {
+                    if (e.target.files && e.target.files[0]) {
+                      setAvatarPreview(URL.createObjectURL(e.target.files[0]));
+                      return
+                    }
+                    setAvatarPreview(manNoAvatar.src);
                   }
-                  setAvatarPreview(manNoAvatar.src);
-                }
-                catch (e) {
-                  console.error(e);
-                }
-              }}
-            />
+                  catch (e) {
+                    console.error(e);
+                  }
+                }}
+              />
+            </label>
           </>
           : ''}
         {isByEmail
