@@ -1,6 +1,6 @@
 import { FC } from "react";
 
-const Menu: FC = () => {
+const ChatMenu: FC = () => {
   return (
     <aside
       className="max-w-4/5 pc:max-w-[400px] w-full "
@@ -10,4 +10,4 @@ const Menu: FC = () => {
   )
 }
 
-export default Menu;
+export default ChatMenu;
