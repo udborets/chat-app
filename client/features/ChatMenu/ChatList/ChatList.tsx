@@ -6,7 +6,7 @@ import ChatListItem from "./ChatListItem/ChatListItem";
 const ChatList: FC<ChatListProps> = ({ }) => {
   return (
     <ul
-      className="absolute pc:relative flex flex-col w-full"
+      className="flex flex-col w-full"
     >
       <ChatListItem />
       <ChatListItem />
