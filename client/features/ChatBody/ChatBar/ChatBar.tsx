@@ -6,7 +6,7 @@ import manNoAvatar from '@/assets/images/manNoAvatar.png';
 const ChatBar: FC = ({ }) => {
   return (
     <div
-      className="flex gap-2 items-center"
+      className="px-4 flex gap-2 items-center"
     >
       <Image
         src={manNoAvatar}

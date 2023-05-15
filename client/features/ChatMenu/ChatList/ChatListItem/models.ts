@@ -1,7 +1,6 @@
 export type ChatListItemProps = {
-  lastMessage: string;
-  id: string;
-  companionName: string;
-  createdAt: string;
-  
-}
+  // lastMessage: string;
+  // id: string;
+  // companionName: string;
+  // createdAt: string;
+};
