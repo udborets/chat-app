@@ -3,11 +3,13 @@ import { FC, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 import manNoAvatar from '@/assets/images/manNoAvatar.png';
+import { useUser } from "@/hooks/useUser";
 import AuthInput from "./AuthInput/AuthInput";
 import { AuthTypes } from "./models";
 
 const AuthForm: FC = () => {
   const [currentAuthType, setCurrentAuthType] = useState<AuthTypes>(AuthTypes.REGISTRATION);
+  const { setState, user: userState } = useUser()
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const {
     register,
@@ -20,7 +22,7 @@ const AuthForm: FC = () => {
       email: '',
       password: '',
       name: '',
-      avatar: null,
+      avatar_url: '',
     }
   });
   const [isByPhone, setIsByPhone] = useState<boolean>(false);
@@ -28,13 +30,13 @@ const AuthForm: FC = () => {
   const submit: SubmitHandler<FieldValues> = (data: FieldValues) => {
     const authParams: Record<string, string> = {};
     if (currentAuthType === AuthTypes.REGISTRATION) {
-      authParams.avatar = data.avatar;
-      authParams.name = data.name;
+      authParams.avatar_url = !!avatarPreview ? avatarPreview : userState.value.avatar_url;
+      authParams.name = data.name ?? null;
     }
     authParams.email = isByEmail ? data.email : null;
     authParams.phone = isByPhone ? data.phone : null;
     authParams.password = data.password;
-    console.log(authParams)
+    setState({ ...data, avatar_url: userState.value.avatar_url });
     reset();
   }
   useEffect(() => {
@@ -47,6 +49,12 @@ const AuthForm: FC = () => {
         onSubmit={handleSubmit(submit)}
         className="p-4 flex flex-col gap-3 max-w-[400px] w-full rounded-[10px] outline "
       >
+        <button onClick={() => console.log(userState)}>
+          a
+        </button>
+        <button onClick={() => setState({ email: 'jajaja' })}>
+          ff
+        </button>
         {currentAuthType === AuthTypes.REGISTRATION
           ? <>
             <AuthInput
@@ -69,28 +77,20 @@ const AuthForm: FC = () => {
               width={80}
               height={80}
             />
-            <AuthInput
-              errors={formState.errors}
-              name="avatar"
-              register={register}
-              errorMessage="Enter valid avatar"
-              options={{
-                onChange: (e) => {
-                  try {
-                    if (!e.target.files[0]) {
-                      setAvatarPreview(manNoAvatar.src);
-                      return
-                    }
+            <input
+              type="file"
+              onChange={(e) => {
+                try {
+                  if (e.target.files && e.target.files[0]) {
                     setAvatarPreview(URL.createObjectURL(e.target.files[0]));
+                    return
                   }
-                  catch (e) {
-                    console.error(e);
-                  }
+                  setAvatarPreview(manNoAvatar.src);
+                }
+                catch (e) {
+                  console.error(e);
                 }
               }}
-              labelText="Avatar"
-              placeholder=""
-              type="file"
             />
           </>
           : ''}
