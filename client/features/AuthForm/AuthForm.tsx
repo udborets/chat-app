@@ -47,7 +47,7 @@ const AuthForm: FC = () => {
     <>
       <form
         onSubmit={handleSubmit(submit)}
-        className="p-4 flex flex-col gap-3 max-w-[400px] w-full rounded-[10px] outline "
+        className="p-4 flex flex-col gap-3 max-w-[400px] w-full rounded-[10px] outline bg-white"
       >
         {currentAuthType === AuthTypes.REGISTRATION
           ? <>

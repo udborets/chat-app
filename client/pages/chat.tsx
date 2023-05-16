@@ -5,7 +5,7 @@ import { FC } from "react";
 const ChatPage: FC = () => {
   return (
     <main
-      className="w-full h-full flex"
+      className="w-full h-full flex bg-white"
     >
       <ChatMenu />
       <ChatBody />

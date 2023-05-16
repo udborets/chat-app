@@ -6,7 +6,7 @@ import manNoAvatar from '@/assets/images/manNoAvatar.png';
 
 const ChatListItem: FC<ChatListItemProps> = ({ }) => {
   return (
-    <li className="flex justify-between w-full px-2 py-1">
+    <li className="flex justify-between w-full px-2 py-1 hover:bg-gray-200 transition-colors duration-150">
       <div className="flex gap-2">
         <Image
           src={manNoAvatar}
