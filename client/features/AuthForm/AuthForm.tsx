@@ -9,7 +9,7 @@ import { AuthTypes } from "./models";
 
 const AuthForm: FC = () => {
   const [currentAuthType, setCurrentAuthType] = useState<AuthTypes>(AuthTypes.REGISTRATION);
-  const { setState, user: userState } = useUser()
+  const { setUserState, userState } = useUser()
   const [avatarPreview, setAvatarPreview] = useState<string>('');
   const {
     register,
@@ -23,7 +23,8 @@ const AuthForm: FC = () => {
       password: '',
       name: '',
       avatar_url: '',
-    }
+    },
+    mode: "all"
   });
   const [isByPhone, setIsByPhone] = useState<boolean>(false);
   const [isByEmail, setIsByEmail] = useState<boolean>(true);
@@ -36,7 +37,6 @@ const AuthForm: FC = () => {
     authParams.email = isByEmail ? data.email : null;
     authParams.phone = isByPhone ? data.phone : null;
     authParams.password = data.password;
-    setState({ ...data, avatar_url: userState.value.avatar_url });
     reset();
   }
   useEffect(() => {

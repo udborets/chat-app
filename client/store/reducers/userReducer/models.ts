@@ -1,5 +1,5 @@
 import { User } from "@/models/user";
 
-export type UserState = {
+export type UserReducer = {
   value: User;
 };
