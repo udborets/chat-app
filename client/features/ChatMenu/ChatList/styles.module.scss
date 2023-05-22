@@ -1,0 +1,8 @@
+.chatListItemBorder {
+  & li {
+    border-bottom: 1px solid black;
+    &:last-child {
+      border: none;
+    }
+  }
+}

@@ -2,9 +2,9 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { User } from "@/models/user";
 import { RootState } from "@/store";
-import { UserState } from "./models";
+import { UserReducer } from "./models";
 
-const initialState: UserState = {
+const initialState: UserReducer = {
   value: {
     avatar_url: "",
     created_at: 0,
@@ -18,7 +18,7 @@ const initialState: UserState = {
   },
 };
 
-export const userState = createSlice({
+export const userReducer = createSlice({
   initialState,
   name: "user",
   reducers: {
@@ -28,5 +28,5 @@ export const userState = createSlice({
   },
 });
 
-export const userActions = userState.actions;
+export const userActions = userReducer.actions;
 export const selectUser = (state: RootState) => state.user;
