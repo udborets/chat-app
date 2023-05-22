@@ -21,8 +21,14 @@ type User struct {
 }
 
 type UserSignInInput struct {
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Phone    string `json:"phone"`
-	Password string `json:"password" binding:"required"`
+	Email    interface{} `json:"email"`
+	Name     interface{} `json:"name"`
+	Phone    interface{} `json:"phone"`
+	Password string      `json:"password" binding:"required"`
+}
+
+type UserValidateOutput struct {
+	User     User      `json:"user"`
+	Chats    []Chat    `json:"chats"`
+	Messages []Message `json:"messages"`
 }

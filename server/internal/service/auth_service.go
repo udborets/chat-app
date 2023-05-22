@@ -82,20 +82,20 @@ func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
 
 func (b *AuthBLogic) SignIn(inp models.UserSignInInput) (int, string, error) {
 	var jwtToken string
-	if inp.Email != "" && validEmail.MatchString(inp.Email) {
-		msg, err := b.database.CheckPassByEmail(inp.Email, inp.Password)
+	if inp.Email != nil && validEmail.MatchString(inp.Email.(string)) {
+		msg, err := b.database.CheckPassByEmail(inp.Email.(string), inp.Password)
 		if err != nil {
 			return http.StatusUnauthorized, msg, err
 		}
 		jwtToken = msg
-	} else if inp.Name != "" && validName.MatchString(inp.Name) {
-		msg, err := b.database.CheckPassByName(inp.Name, inp.Password)
+	} else if inp.Name != "" && validName.MatchString(inp.Name.(string)) {
+		msg, err := b.database.CheckPassByName(inp.Name.(string), inp.Password)
 		if err != nil {
 			return http.StatusUnauthorized, msg, err
 		}
 		jwtToken = msg
-	} else if inp.Phone != "" && validPhone.MatchString(inp.Phone) {
-		msg, err := b.database.CheckPassByPhone(inp.Phone, inp.Password)
+	} else if inp.Phone != "" && validPhone.MatchString(inp.Phone.(string)) {
+		msg, err := b.database.CheckPassByPhone(inp.Phone.(string), inp.Password)
 		if err != nil {
 			return http.StatusUnauthorized, msg, err
 		}

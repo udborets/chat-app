@@ -55,6 +55,7 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 	jwtToken := msg
 	ctx.SetSameSite(http.SameSiteLaxMode)
 	ctx.SetCookie("Authorization", jwtToken, 3600*24*30, "", "", false, true)
+	ctx.Redirect(http.StatusMovedPermanently, "http://localhost/auth/validate")
 }
 
 func (h *AuthHTTP) requireAuth(ctx *gin.Context) {
