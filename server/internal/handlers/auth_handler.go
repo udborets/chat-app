@@ -76,6 +76,6 @@ func (h *AuthHTTP) requireAuth(ctx *gin.Context) {
 }
 
 func (h *AuthHTTP) validate(ctx *gin.Context) {
-	user, _ := ctx.Get("user")
-	ctx.JSON(http.StatusOK, gin.H{"message": user})
+	output, _ := ctx.Get("output")
+	ctx.JSON(http.StatusOK, output)
 }
