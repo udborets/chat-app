@@ -110,7 +110,7 @@ func (b *AuthBLogic) SignIn(inp models.UserSignInInput) (int, string, error) {
 func (b *AuthBLogic) ParseJWTToken(tokenString string) (interface{}, int, string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(os.Getenv("SECRET")), nil
 	})
@@ -123,12 +123,12 @@ func (b *AuthBLogic) ParseJWTToken(tokenString string) (interface{}, int, string
 			return nil, http.StatusUnauthorized, "expiration of JWT ended", nil
 		}
 
-		user, err := b.database.GetUserByID(int(claims["sub"].(float64)))
+		output, err := b.database.GetInfoByUserId(claims["sub"].(int))
 		if err != nil {
-			return nil, http.StatusBadRequest, "no user with this id", err
+			return nil, http.StatusInternalServerError, "error on taking info about user", err
 		}
 
-		return user, http.StatusOK, "", nil
+		return output, http.StatusOK, "", nil
 	} else {
 		return nil, http.StatusUnauthorized, "JWT token has error", errors.New("JWT token has error")
 	}

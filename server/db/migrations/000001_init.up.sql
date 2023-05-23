@@ -18,7 +18,6 @@ CREATE TABLE "users" (
                                 "phone" varchar(20) UNIQUE,
                                 "avatar_url" varchar(255),
                                 "last_seen" integer,
-                                "connection" TEXT NOT NULL,
                                 "created_at" integer NOT NULL,
                                 "updated_at" integer,
                                 CONSTRAINT "users_pk" PRIMARY KEY ("id")
@@ -89,3 +88,9 @@ ALTER TABLE "users_chats" ADD CONSTRAINT "users_chats_fk0" FOREIGN KEY ("user_id
 ALTER TABLE "users_chats" ADD CONSTRAINT "users_chats_fk1" FOREIGN KEY ("chat_id") REFERENCES "chats"("chat_id");
 
 ALTER TABLE "friends" ADD CONSTRAINT "friends_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
+
+
+
+
+
+

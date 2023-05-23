@@ -8,6 +8,12 @@ type Message struct {
 	UpdatedAt int64  `json:"updated_at" binding:"required"`
 }
 
+type MessageValidateOutput struct {
+	MessageId int    `json:"message_id"`
+	Text      string `json:"text"`
+	IsSeen    bool   `json:"is_seen"`
+}
+
 type ChatMessage struct {
 	ChatId    string `json:"chat_id"`
 	MessageId string `json:"message_id"`

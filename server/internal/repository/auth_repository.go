@@ -14,13 +14,14 @@ import (
 
 type IAuthDB interface {
 	AddUser(user models.User) (string, error)
-	AddUserWithNoEmail(user models.User) (string, error)
-	AddUserWithNoPhone(user models.User) (string, error)
+	CheckUniqUser(user models.UserSignUpInput) (string, error)
 	CheckPassByName(name, pass string) (string, error)
 	CheckPassByEmail(email, pass string) (string, error)
 	CheckPassByPhone(email, pass string) (string, error)
-	GetUserByID(userId int) (models.User, error)
-	CheckUniqUser(user models.UserSignUpInput) (string, error)
+	GetInfoByUserId(userId int) (interface{}, error)
+	//GetUserByID(userId int) (interface{}, error)
+	//GetChatsByUserID(userId int) (interface{}, error)
+	//GetMessagesByChatsID(chatsId []int) (interface{}, error)
 }
 
 type AuthDB struct {
@@ -43,42 +44,6 @@ func (a *AuthDB) AddUser(user models.User) (string, error) {
 
 	_, err = a.db.Exec(`insert into "auth" (name, email, phone, hash_password, user_id) values ($1,$2,$3,$4,$5)`,
 		user.Name, user.Email, user.Phone, user.HashPass, addedId)
-	if err != nil {
-		return "server couldn't add data to database", err
-	}
-	return "", nil
-}
-
-func (a *AuthDB) AddUserWithNoEmail(user models.User) (string, error) {
-	var addedId int
-
-	err := a.db.QueryRow("insert into \"users\" (name, hash_password, email, phone, avatar_url, created_at, updated_at) "+
-		"values ($1,$2,$3,$4,$5,$6,$7) returning id", user.Name, user.HashPass, nil, user.Phone, user.AvatarURL,
-		user.CreatedAt, user.UpdatedAt).Scan(&addedId)
-	if err != nil {
-		return "server couldn't add data to database", err
-	}
-
-	_, err = a.db.Exec(`insert into "auth" (name, email, phone, hash_password, user_id) values ($1,$2,$3,$4,$5)`,
-		user.Name, nil, user.Phone, user.HashPass, addedId)
-	if err != nil {
-		return "server couldn't add data to database", err
-	}
-	return "", nil
-}
-
-func (a *AuthDB) AddUserWithNoPhone(user models.User) (string, error) {
-	var addedId int
-
-	err := a.db.QueryRow("insert into \"users\" (name, hash_password, email, phone, avatar_url, created_at, updated_at) "+
-		"values ($1,$2,$3,$4,$5,$6,$7) returning id", user.Name, user.HashPass, user.Email, nil, user.AvatarURL,
-		user.CreatedAt, user.UpdatedAt).Scan(&addedId)
-	if err != nil {
-		return "server couldn't add data to database", err
-	}
-
-	_, err = a.db.Exec(`insert into "auth" (name, email, phone, hash_password, user_id) values ($1,$2,$3,$4,$5)`,
-		user.Name, user.Email, nil, user.HashPass, addedId)
 	if err != nil {
 		return "server couldn't add data to database", err
 	}
@@ -196,16 +161,47 @@ func createJWTToken(userId int) (string, error) {
 	return tokenString, err
 }
 
-func (a *AuthDB) GetUserByID(userId int) (models.User, error) {
-	fmt.Println(userId)
-	row := a.db.QueryRow(`select * from "users" where id = $1`, userId)
+func (a *AuthDB) GetInfoByUserId(userId int) (interface{}, error) {
+	output := models.ValidateOutput{}
+	selectUser := a.db.QueryRow("select id, name, email, phone, avatar_url from \"users\" where id = $1", userId)
 
-	user := models.User{}
-	err := row.Scan(&user.UserId, &user.Name, &user.HashPass, &user.Email, &user.Phone, &user.AvatarURL,
-		&user.LastSeen, &user.CreatedAt, &user.UpdatedAt)
+	err := selectUser.Scan(&output.UserId, &output.Name, &output.Email, &output.Phone, &output.AvatarURL)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	return user, nil
+	chats := make([]models.ChatValidateOutput, 0)
+	selectChats, err := a.db.Query("select chat_id from \"users_chats\" where user_id = $1", userId)
+	if err != nil {
+		return nil, err
+	}
+
+	for selectChats.Next() {
+		var chat models.ChatValidateOutput
+		err := selectChats.Scan(&chat.ChatId)
+		if err != nil {
+			return nil, err
+		}
+		chats = append(chats, chat)
+	}
+
+	for _, chat := range chats {
+		chatId := chat.ChatId
+		selectMessages, err := a.db.Query("select message_id, text, is_seen from \"messages\" where chat_id = $1", chatId)
+		if err != nil {
+			return nil, err
+		}
+
+		for selectMessages.Next() {
+			message := models.MessageValidateOutput{}
+			err := selectMessages.Scan(&message.MessageId, &message.Text, &message.IsSeen)
+			if err != nil {
+				return nil, err
+			}
+
+			chat.Messages = append(chat.Messages, message)
+		}
+		output.Chats = append(output.Chats, chat)
+	}
+	return output, nil
 }

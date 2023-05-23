@@ -61,18 +61,17 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 func (h *AuthHTTP) requireAuth(ctx *gin.Context) {
 	tokenString, err := ctx.Cookie("Authorization")
 	if err != nil {
-		responses.NewResponse(ctx, http.StatusUnauthorized, err.Error(), err)
+		responses.NewResponse(ctx, http.StatusUnauthorized, "Please login to chat or sign in if you first time here)", err)
 		return
 	}
 
-	user, statusCode, msg, err := h.authBLogic.ParseJWTToken(tokenString)
+	output, statusCode, msg, err := h.authBLogic.ParseJWTToken(tokenString)
 	if err != nil {
 		responses.NewResponse(ctx, statusCode, msg, err)
 		return
 	}
 
-	ctx.Set("user", user.(models.User))
-
+	ctx.Set("output", output.(models.ValidateOutput))
 	ctx.Next()
 }
 
