@@ -1,16 +1,16 @@
 package service
 
 import (
-	"errors"
 	"github.com/udborets/chat-app/server/internal/models"
 	"github.com/udborets/chat-app/server/internal/repository"
 	"net/http"
-	"time"
 )
 
 type IWebsBLogic interface {
-	GetRoomsByUserId(userId int) (interface{}, string, error)
-	CreateRoom(users []int) (int, string, error)
+	ConnectToChats(client *models.Client, userId int) (int, string, error)
+	//GetChats(userId int) (int, string, error)
+	//GetRoomsByUserId(userId int) (interface{}, string, error)
+	//CreateRoom(users []int) (int, string, error)
 }
 
 type WebsBLogic struct {
@@ -23,39 +23,60 @@ func NewWebsBLogic() *WebsBLogic {
 	}
 }
 
-func (b *WebsBLogic) GetRoomsByUserId(userId int) (interface{}, string, error) {
-	rooms, err := b.websRepository.GetRooms(userId)
+func (b *WebsBLogic) ConnectToChats(client *models.Client, userId int) (int, string, error) {
+	chats, err := b.websRepository.GetChats(userId)
 	if err != nil {
-		return nil, "couldn't get rooms by userId", err
+		return http.StatusInternalServerError, "error on getting chats from database", err
 	}
-	return rooms, "successfully get rooms by userId", err
+
+	for _, chat := range chats.([]int) {
+		if room, ok := models.RoomsMap.Rooms[chat]; ok {
+			models.AddClient(client, room)
+		} else {
+			models.NewRoom(client, chat)
+		}
+	}
+
+	return http.StatusOK, "successfully connected", nil
 }
 
-func (b *WebsBLogic) CreateRoom(usersId []int) (int, string, error) {
-	if len(usersId) < 2 {
-		return http.StatusBadRequest, "not enough user id, minimum is 2", errors.New("not enough user id, minimum is 2")
-	}
+//func (b *WebsBLogic) GetChats(userId int) (interface{}, int, string, error) {
+//
+//}
 
-	msg, err := b.websRepository.CheckUsers(usersId)
-	if err != nil {
-		return http.StatusBadRequest, msg, err
-	}
-
-	chat := models.Chat{
-		LastMessage: nil,
-		CreatedAt:   time.Now().Unix(),
-		UpdatedAt:   time.Now().Unix(),
-	}
-
-	chatId, msg, err := b.websRepository.NewRoom(chat)
-	if err != nil {
-		return 0, msg, err
-	}
-
-	msg, err = b.websRepository.ConnectUsersToChat(usersId, chatId)
-	if err != nil {
-		return 0, msg, err
-	}
-
-	return chatId, "successfully create new chat", nil
-}
+//func (b *WebsBLogic) GetRoomsByUserId(userId int) (interface{}, string, error) {
+//	rooms, err := b.websRepository.GetRooms(userId)
+//	if err != nil {
+//		return nil, "couldn't get rooms by userId", err
+//	}
+//	return rooms, "successfully get rooms by userId", err
+//}
+//
+//func (b *WebsBLogic) CreateRoom(usersId []int) (int, string, error) {
+//	if len(usersId) < 2 {
+//		return http.StatusBadRequest, "not enough user id, minimum is 2", errors.New("not enough user id, minimum is 2")
+//	}
+//
+//	msg, err := b.websRepository.CheckUsers(usersId)
+//	if err != nil {
+//		return http.StatusBadRequest, msg, err
+//	}
+//
+//	chat := models.Chat{
+//		LastMessage: nil,
+//		CreatedAt:   time.Now().Unix(),
+//		UpdatedAt:   time.Now().Unix(),
+//	}
+//
+//	chatId, msg, err := b.websRepository.NewRoom(chat)
+//	if err != nil {
+//		return 0, msg, err
+//	}
+//
+//	msg, err = b.websRepository.ConnectUsersToChat(usersId, chatId)
+//	if err != nil {
+//		return 0, msg, err
+//	}
+//
+//	return chatId, "successfully create new chat", nil
+//}
