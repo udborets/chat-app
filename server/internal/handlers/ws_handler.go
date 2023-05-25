@@ -36,8 +36,8 @@ func (h *WebsHandler) InitWebsock(router *gin.Engine) {
 	websock := router.Group("/ws")
 
 	//websock.GET("/chats/:userId", h.getRooms)
-	//websock.GET("/newChat", h.newRoom)
-	websock.GET("/chat", h.joinRoom)
+	websock.GET("/newChat", h.newRoom)
+	websock.GET("/chat", h.joinRoom) // ws://localhost/ws/chat?userId=4&chatId=3
 }
 
 func (h *WebsHandler) connect(ctx *gin.Context) {
@@ -60,6 +60,15 @@ func (h *WebsHandler) connect(ctx *gin.Context) {
 		responses.NewResponse(ctx, statusCode, msg, err)
 		return
 	}
+}
+
+func (h *WebsHandler) newRoom(ctx *gin.Context) {
+	chatId, msg, err := h.websBLogic.CreateRoom()
+	if err != nil {
+		responses.NewResponse(ctx, http.StatusBadRequest, msg, err)
+		return
+	}
+	ctx.JSON(http.StatusOK, chatId)
 }
 
 func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/chat?userId=5&chatId=3
@@ -92,38 +101,6 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 	go h.websBLogic.ReadMessages(mapOfRooms, client, chatId)
 }
 
-//func (c *Client) ReadMessage() {
-//	defer func() {
-//		c.DeleteClient()
-//	}()
-//
-//	for {
-//		_, _, err := c.Connection.ReadMessage()
-//
-//		if err != nil {
-//			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-//				fmt.Printf("error reading message: %v", err)
-//			}
-//			break
-//		}
-//	}
-//}
-
-//func (h *WebsHandler) getRooms(ctx *gin.Context) {
-//	userId, err := strconv.Atoi(ctx.Param("userId"))
-//	if err != nil {
-//		responses.NewResponse(ctx, http.StatusBadRequest, ":userId require int", err)
-//		return
-//	}
-//
-//	rooms, msg, err := h.websBLogic.GetRoomsByUserId(userId)
-//	if err != nil {
-//		responses.NewResponse(ctx, http.StatusInternalServerError, msg, err)
-//	}
-//
-//	ctx.Set("rooms", rooms.([]models.Chat))
-//}
-//
 //func (h *WebsHandler) newRoom(ctx *gin.Context) {
 //	var inp models.ChatCreateInput
 //
@@ -142,5 +119,20 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 //
 //	redirectUrl := fmt.Sprintf("http://localhost:%s/ws/joinRoom/%d", os.Getenv("PORT"), chatId)
 //	ctx.Redirect(http.StatusFound, redirectUrl)
+//}
+
+//func (h *WebsHandler) getRooms(ctx *gin.Context) {
+//	userId, err := strconv.Atoi(ctx.Param("userId"))
+//	if err != nil {
+//		responses.NewResponse(ctx, http.StatusBadRequest, ":userId require int", err)
+//		return
+//	}
+//
+//	rooms, msg, err := h.websBLogic.GetRoomsByUserId(userId)
+//	if err != nil {
+//		responses.NewResponse(ctx, http.StatusInternalServerError, msg, err)
+//	}
+//
+//	ctx.Set("rooms", rooms.([]models.Chat))
 //}
 //

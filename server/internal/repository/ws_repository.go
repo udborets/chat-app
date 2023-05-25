@@ -2,14 +2,16 @@ package repository
 
 import (
 	"database/sql"
+	"github.com/udborets/chat-app/server/internal/models"
 )
 
 type IWebsRepository interface {
 	GetChats(userId int) (interface{}, error)
-	CheckChat(userId, chatId int) error
+	CheckChat(chatId int) error
+	NewRoom(chat *models.Chat) (int, string, error)
+	AddUserToChat(userId, chatId int) (string, error)
 	//GetRooms(userId int) ([]models.Chat, error)
 	//CheckUsers(users []int) (string, error)
-	//NewRoom(chat models.Chat) (int, string, error)
 	//ConnectUsersToChat(users []int, chatId int) (string, error)
 }
 
@@ -41,10 +43,33 @@ func (r *WebsRepository) GetChats(userId int) (interface{}, error) {
 	return chats, nil
 }
 
-func (r *WebsRepository) CheckChat(userId, chatId int) error {
+func (r *WebsRepository) CheckChat(chatId int) error {
 	var selectedRow int
-	row := r.db.QueryRow("SELECT chat_id FROM \"users_chats\" WHERE user_id=$1 AND chat_id=$2", userId, chatId)
+	row := r.db.QueryRow("SELECT chat_id FROM \"chats\" WHERE chat_id=$1", chatId)
 	return row.Scan(&selectedRow)
+}
+
+func (r *WebsRepository) NewRoom(chat *models.Chat) (int, string, error) {
+	var chatId int
+
+	err := r.db.QueryRow("INSERT INTO \"chats\" (last_message_id, created_at, updated_at)"+
+		"VALUES ($1,$2,$3) RETURNING chat_id", chat.LastMessage, chat.CreatedAt, chat.UpdatedAt).Scan(&chatId)
+	if err != nil {
+		return 0, "couldn't add chat to 'chat' database", err
+	}
+	return chatId, "successfully added chat", nil
+}
+
+func (r *WebsRepository) AddUserToChat(userId, chatId int) (string, error) {
+	var selectedRow int
+	row := r.db.QueryRow("SELECT user_id FROM \"users_chats\" WHERE user_id=$1 AND chat_id=$2", userId, chatId)
+	if err := row.Scan(&selectedRow); err != nil {
+		_, err1 := r.db.Exec("INSERT INTO \"users_chats\" (user_id, chat_id) VALUES ($1,$2)", userId, chatId)
+		if err1 != nil {
+			return "couldn't add user to chat", err
+		}
+	}
+	return "success", nil
 }
 
 //func (r *WebsRepository) GetRooms(userId int) ([]models.Chat, error) {

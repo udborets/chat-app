@@ -123,7 +123,7 @@ func (b *AuthBLogic) ParseJWTToken(tokenString string) (interface{}, int, string
 			return nil, http.StatusUnauthorized, "expiration of JWT ended", nil
 		}
 
-		output, err := b.database.GetInfoByUserId(claims["sub"].(int))
+		output, err := b.database.GetInfoByUserId(int(claims["sub"].(float64)))
 		if err != nil {
 			return nil, http.StatusInternalServerError, "error on taking info about user", err
 		}
