@@ -98,7 +98,7 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 		return
 	}
 
-	go h.websBLogic.ReadMessages(mapOfRooms, client, chatId)
+	go h.websBLogic.ReadMessages(mapOfRooms, client, chatId, userId)
 	go h.websBLogic.WriteMessages(mapOfRooms, client, chatId)
 }
 

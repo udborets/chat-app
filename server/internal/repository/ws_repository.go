@@ -10,6 +10,7 @@ type IWebsRepository interface {
 	CheckChat(chatId int) error
 	NewRoom(chat *models.Chat) (int, string, error)
 	AddUserToChat(userId, chatId int) (string, error)
+	AddMessage(msg *models.Message) error
 	//GetRooms(userId int) ([]models.Chat, error)
 	//CheckUsers(users []int) (string, error)
 	//ConnectUsersToChat(users []int, chatId int) (string, error)
@@ -70,6 +71,29 @@ func (r *WebsRepository) AddUserToChat(userId, chatId int) (string, error) {
 		}
 	}
 	return "success", nil
+}
+
+func (r *WebsRepository) AddMessage(msg *models.Message) error {
+	_, err := r.db.Exec("INSERT INTO \"messages\" (chat_id, text, sender_id, is_seen, created_at, updated_at)"+
+		"VALUES ($1,$2,$3,$4,$5,$6)", msg.ChatId, msg.Text,
+		msg.SenderId, msg.IsSeen, msg.CreatedAt, msg.UpdatedAt)
+	if err != nil {
+		return err
+	}
+
+	var lastMessageId interface{}
+	row := r.db.QueryRow("SELECT last_message_id FROM \"chats\" WHERE chat_id=$1", msg.ChatId)
+	if err := row.Scan(&lastMessageId); err != nil {
+		return err
+	}
+
+	if lastMessageId == nil {
+		_, err := r.db.Exec("UPDATE \"chats\" SET last_message_id=$1 WHERE chat_id=$2", msg.MessageId, msg.ChatId)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 //func (r *WebsRepository) GetRooms(userId int) ([]models.Chat, error) {

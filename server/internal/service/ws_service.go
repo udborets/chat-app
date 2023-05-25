@@ -13,7 +13,7 @@ import (
 type IWebsBLogic interface {
 	ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error)
 	ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) (int, string, error)
-	ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int)
+	ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int)
 	WriteMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int)
 	CreateRoom() (int, string, error)
 	//GetChats(userId int) (int, string, error)
@@ -84,7 +84,7 @@ func (b *WebsBLogic) ConnectToChat(mapOfRooms *models.RoomsMap, client *models.C
 	return http.StatusOK, "successfully connected", nil
 }
 
-func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int) {
+func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) {
 	room := mapOfRooms.Rooms[chatId]
 	defer func() {
 		room.RemoveClient(client)
@@ -104,7 +104,20 @@ func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Cl
 			break
 		}
 
-		//b.websRepository.AddMessage()
+		newMessage := models.Message{
+			ChatId:    chatId,
+			Text:      string(payload),
+			SenderId:  userId,
+			IsSeen:    false,
+			CreatedAt: time.Now().Unix(),
+			UpdatedAt: time.Now().Unix(),
+		}
+		err = b.websRepository.AddMessage(&newMessage)
+		if err != nil {
+			log.Fatal(err)
+			break
+		}
+
 		//fmt.Printf("sending message: %s to clients: %v\n", string(payload), room.Clients)
 		for chatter := range room.Clients {
 			chatter.Messages <- payload
