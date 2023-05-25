@@ -7,7 +7,7 @@ import (
 )
 
 type IWebsBLogic interface {
-	ConnectToChats(client *models.Client, userId int) (int, string, error)
+	ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error)
 	//GetChats(userId int) (int, string, error)
 	//GetRoomsByUserId(userId int) (interface{}, string, error)
 	//CreateRoom(users []int) (int, string, error)
@@ -23,18 +23,26 @@ func NewWebsBLogic() *WebsBLogic {
 	}
 }
 
-func (b *WebsBLogic) ConnectToChats(client *models.Client, userId int) (int, string, error) {
+func (b *WebsBLogic) ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error) {
 	chats, err := b.websRepository.GetChats(userId)
 	if err != nil {
 		return http.StatusInternalServerError, "error on getting chats from database", err
 	}
 
 	for _, chat := range chats.([]int) {
-		if room, ok := models.RoomsMap.Rooms[chat]; ok {
-			models.AddClient(client, room)
+		mapOfRooms.Lock()
+		if room, ok := mapOfRooms.Rooms[chat]; ok {
+			room.Lock()
+			room.Clients[client] = true
+			room.Unlock()
 		} else {
-			models.NewRoom(client, chat)
+			newRoom := models.NewRoom(chat)
+			newRoom.Lock()
+			newRoom.Clients[client] = true
+			mapOfRooms.Rooms[chat] = newRoom
+			newRoom.Unlock()
 		}
+		mapOfRooms.Unlock()
 	}
 
 	return http.StatusOK, "successfully connected", nil

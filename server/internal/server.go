@@ -15,7 +15,6 @@ func StartServer() {
 	pass := os.Getenv("DB_PASSWORD")
 	name := os.Getenv("DB_NAME")
 	sslmode := os.Getenv("DB_SSLMODE")
-
 	config := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		host, port, user, pass, name, sslmode)
 
