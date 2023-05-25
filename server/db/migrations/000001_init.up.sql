@@ -44,7 +44,6 @@ CREATE TABLE "messages" (
                                    "chat_id" integer NOT NULL,
                                    "text" varchar(255) NOT NULL,
                                    "sender_id" integer NOT NULL,
-                                   "receiver_id" integer NOT NULL,
                                    "is_seen" BOOLEAN NOT NULL,
                                    "created_at" integer,
                                    "updated_at" integer,
@@ -82,15 +81,8 @@ ALTER TABLE "chats" ADD CONSTRAINT "chats_fk0" FOREIGN KEY ("last_message_id") R
 
 ALTER TABLE "messages" ADD CONSTRAINT "messages_fk0" FOREIGN KEY ("chat_id") REFERENCES "chats"("chat_id");
 ALTER TABLE "messages" ADD CONSTRAINT "messages_fk1" FOREIGN KEY ("sender_id") REFERENCES "users"("id");
-ALTER TABLE "messages" ADD CONSTRAINT "messages_fk2" FOREIGN KEY ("receiver_id") REFERENCES "users"("id");
 
 ALTER TABLE "users_chats" ADD CONSTRAINT "users_chats_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
 ALTER TABLE "users_chats" ADD CONSTRAINT "users_chats_fk1" FOREIGN KEY ("chat_id") REFERENCES "chats"("chat_id");
 
 ALTER TABLE "friends" ADD CONSTRAINT "friends_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
-
-
-
-
-
-

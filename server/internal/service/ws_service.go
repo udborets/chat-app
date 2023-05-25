@@ -97,7 +97,6 @@ func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Cl
 		_, payload, err := client.Connection.ReadMessage()
 
 		if err != nil {
-			fmt.Println("aaaaaaaa")
 			fmt.Println(err)
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error reading message %v: ", err)
@@ -105,7 +104,8 @@ func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Cl
 			break
 		}
 
-		fmt.Printf("sending message: %s to clients: %v\n", string(payload), room.Clients)
+		//b.websRepository.AddMessage()
+		//fmt.Printf("sending message: %s to clients: %v\n", string(payload), room.Clients)
 		for chatter := range room.Clients {
 			chatter.Messages <- payload
 		}
