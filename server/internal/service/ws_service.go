@@ -14,6 +14,7 @@ type IWebsBLogic interface {
 	ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error)
 	ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) (int, string, error)
 	ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int)
+	WriteMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int)
 	CreateRoom() (int, string, error)
 	//GetChats(userId int) (int, string, error)
 	//GetRoomsByUserId(userId int) (interface{}, string, error)
@@ -96,12 +97,15 @@ func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Cl
 		_, payload, err := client.Connection.ReadMessage()
 
 		if err != nil {
+			fmt.Println("aaaaaaaa")
+			fmt.Println(err)
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("error reading message %v: ", err)
 			}
 			break
 		}
 
+		fmt.Printf("sending message: %s to clients: %v\n", string(payload), room.Clients)
 		for chatter := range room.Clients {
 			chatter.Messages <- payload
 		}

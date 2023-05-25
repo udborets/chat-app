@@ -89,7 +89,7 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 		responses.NewResponse(ctx, http.StatusBadRequest, "websocket connection required", err)
 		return
 	}
-	defer conn.Close()
+	//defer conn.Close()
 
 	client := models.NewClient(conn)
 	statusCode, msg, err := h.websBLogic.ConnectToChat(mapOfRooms, client, userId, chatId)
@@ -99,6 +99,7 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 	}
 
 	go h.websBLogic.ReadMessages(mapOfRooms, client, chatId)
+	go h.websBLogic.WriteMessages(mapOfRooms, client, chatId)
 }
 
 //func (h *WebsHandler) newRoom(ctx *gin.Context) {
