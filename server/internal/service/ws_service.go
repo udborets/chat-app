@@ -1,13 +1,18 @@
 package service
 
 import (
+	"fmt"
+	"github.com/gorilla/websocket"
 	"github.com/udborets/chat-app/server/internal/models"
 	"github.com/udborets/chat-app/server/internal/repository"
+	"log"
 	"net/http"
 )
 
 type IWebsBLogic interface {
 	ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error)
+	ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) (int, string, error)
+	ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int)
 	//GetChats(userId int) (int, string, error)
 	//GetRoomsByUserId(userId int) (interface{}, string, error)
 	//CreateRoom(users []int) (int, string, error)
@@ -46,6 +51,79 @@ func (b *WebsBLogic) ConnectToChats(mapOfRooms *models.RoomsMap, client *models.
 	}
 
 	return http.StatusOK, "successfully connected", nil
+}
+
+func (b *WebsBLogic) ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, userId, chatId int) (int, string, error) {
+	err := b.websRepository.CheckChat(userId, chatId)
+	if err != nil {
+		return http.StatusBadRequest, fmt.Sprintf("user: %d don't have chat: %d", userId, chatId), err
+	}
+
+	mapOfRooms.Lock()
+	defer mapOfRooms.Unlock()
+	if room, ok := mapOfRooms.Rooms[chatId]; ok {
+		room.Lock()
+		room.Clients[client] = true
+		room.Unlock()
+	} else {
+		newRoom := models.NewRoom(chatId)
+		newRoom.Lock()
+		newRoom.Clients[client] = true
+		mapOfRooms.Rooms[chatId] = newRoom
+		newRoom.Unlock()
+	}
+
+	return http.StatusOK, "successfully connected", nil
+}
+
+func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int) {
+	room := mapOfRooms.Rooms[chatId]
+	defer func() {
+		room.RemoveClient(client)
+		if len(room.Clients) == 0 {
+			mapOfRooms.RemoveRoom(room.RoomId)
+		}
+	}()
+
+	for {
+		_, payload, err := client.Connection.ReadMessage()
+
+		if err != nil {
+			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+				log.Printf("error reading message %v: ", err)
+			}
+			break
+		}
+
+		for chatter := range room.Clients {
+			chatter.Messages <- payload
+		}
+	}
+}
+
+func (b *WebsBLogic) WriteMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int) {
+	room := mapOfRooms.Rooms[chatId]
+	defer func() {
+		room.RemoveClient(client)
+		if len(room.Clients) == 0 {
+			mapOfRooms.RemoveRoom(room.RoomId)
+		}
+	}()
+
+	for {
+		select {
+		case message, ok := <-client.Messages:
+			if !ok {
+				if err := client.Connection.WriteMessage(websocket.CloseMessage, nil); err != nil {
+					log.Printf("connection closed: %v", err)
+				}
+				return
+			}
+			if err := client.Connection.WriteMessage(websocket.TextMessage, message); err != nil {
+				log.Printf("error on sending message: %v", err)
+			}
+		}
+	}
 }
 
 //func (b *WebsBLogic) GetChats(userId int) (interface{}, int, string, error) {

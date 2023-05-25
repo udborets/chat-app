@@ -6,6 +6,7 @@ import (
 
 type IWebsRepository interface {
 	GetChats(userId int) (interface{}, error)
+	CheckChat(userId, chatId int) error
 	//GetRooms(userId int) ([]models.Chat, error)
 	//CheckUsers(users []int) (string, error)
 	//NewRoom(chat models.Chat) (int, string, error)
@@ -38,6 +39,12 @@ func (r *WebsRepository) GetChats(userId int) (interface{}, error) {
 		chats = append(chats, chatId)
 	}
 	return chats, nil
+}
+
+func (r *WebsRepository) CheckChat(userId, chatId int) error {
+	var selectedRow int
+	row := r.db.QueryRow("SELECT chat_id FROM \"users_chats\" WHERE user_id=$1 AND chat_id=$2", userId, chatId)
+	return row.Scan(&selectedRow)
 }
 
 //func (r *WebsRepository) GetRooms(userId int) ([]models.Chat, error) {

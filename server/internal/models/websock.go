@@ -37,6 +37,25 @@ func NewRoomsMap() *RoomsMap {
 	return &RoomsMap{Rooms: make(map[int]*Room)}
 }
 
+func (m *RoomsMap) RemoveRoom(roomId int) {
+	m.Lock()
+	defer m.Unlock()
+
+	if _, ok := m.Rooms[roomId]; ok {
+		delete(m.Rooms, roomId)
+	}
+}
+
+func (r *Room) RemoveClient(client *Client) {
+	r.Lock()
+	defer r.Unlock()
+
+	if _, ok := r.Clients[client]; ok {
+		client.Connection.Close()
+		delete(r.Clients, client)
+	}
+}
+
 //func NewRoom(client *Client, roomId int) *Room {
 //	mp := make(map[*Client]bool)
 //	mp[client] = true

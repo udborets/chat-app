@@ -33,11 +33,11 @@ func (h *WebsHandler) InitWebsock(router *gin.Engine) {
 
 	router.GET("/ws:userId", h.connect)
 
-	//websock := router.Group("/ws")
-	//
+	websock := router.Group("/ws")
+
 	//websock.GET("/chats/:userId", h.getRooms)
 	//websock.GET("/newChat", h.newRoom)
-	//websock.GET("/joinChat/:chatId", h.joinRoom)
+	websock.GET("/chat", h.joinRoom)
 }
 
 func (h *WebsHandler) connect(ctx *gin.Context) {
@@ -60,6 +60,36 @@ func (h *WebsHandler) connect(ctx *gin.Context) {
 		responses.NewResponse(ctx, statusCode, msg, err)
 		return
 	}
+}
+
+func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/chat?userId=5&chatId=3
+	userId, err := strconv.Atoi(ctx.Query("userId"))
+	if err != nil {
+		responses.NewResponse(ctx, http.StatusBadRequest, "user require integer", err)
+		return
+	}
+
+	chatId, err := strconv.Atoi(ctx.Query("chatId"))
+	if err != nil {
+		responses.NewResponse(ctx, http.StatusBadRequest, "chatId require integer", err)
+		return
+	}
+
+	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+	if err != nil {
+		responses.NewResponse(ctx, http.StatusBadRequest, "websocket connection required", err)
+		return
+	}
+	defer conn.Close()
+
+	client := models.NewClient(conn)
+	statusCode, msg, err := h.websBLogic.ConnectToChat(mapOfRooms, client, userId, chatId)
+	if err != nil {
+		responses.NewResponse(ctx, statusCode, msg, err)
+		return
+	}
+
+	go h.websBLogic.ReadMessages(mapOfRooms, client, chatId)
 }
 
 //func (c *Client) ReadMessage() {
@@ -114,6 +144,3 @@ func (h *WebsHandler) connect(ctx *gin.Context) {
 //	ctx.Redirect(http.StatusFound, redirectUrl)
 //}
 //
-//func (h *WebsHandler) joinRoom(ctx *gin.Context) {
-//
-//}
