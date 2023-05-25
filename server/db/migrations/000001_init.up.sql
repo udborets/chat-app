@@ -77,7 +77,6 @@ CREATE TABLE "friends" (
 ALTER TABLE "auth" ADD CONSTRAINT "auth_fk0" FOREIGN KEY ("user_id") REFERENCES "users"("id");
 
 
-ALTER TABLE "chats" ADD CONSTRAINT "chats_fk0" FOREIGN KEY ("last_message_id") REFERENCES "messages"("message_id");
 
 ALTER TABLE "messages" ADD CONSTRAINT "messages_fk0" FOREIGN KEY ("chat_id") REFERENCES "chats"("chat_id");
 ALTER TABLE "messages" ADD CONSTRAINT "messages_fk1" FOREIGN KEY ("sender_id") REFERENCES "users"("id");

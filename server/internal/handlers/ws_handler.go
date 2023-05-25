@@ -36,8 +36,8 @@ func (h *WebsHandler) InitWebsock(router *gin.Engine) {
 	websock := router.Group("/ws")
 
 	//websock.GET("/chats/:userId", h.getRooms)
-	websock.GET("/newChat", h.newRoom)
-	websock.GET("/chat", h.joinRoom) // ws://localhost/ws/chat?userId=4&chatId=3
+	websock.GET("/newChat", h.newRoom) // http://localhost/ws/newChat
+	websock.GET("/chat", h.joinRoom)   // ws://localhost/ws/chat?userId=4&chatId=3
 }
 
 func (h *WebsHandler) connect(ctx *gin.Context) {
@@ -82,6 +82,11 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 	if err != nil {
 		responses.NewResponse(ctx, http.StatusBadRequest, "chatId require integer", err)
 		return
+	}
+
+	msg, err := h.websBLogic.CheckParams(userId, chatId)
+	if err != nil {
+		responses.NewResponse(ctx, http.StatusBadRequest, msg, err)
 	}
 
 	conn, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)

@@ -7,10 +7,12 @@ import (
 
 type IWebsRepository interface {
 	GetChats(userId int) (interface{}, error)
+	CheckUser(userId int) error
 	CheckChat(chatId int) error
 	NewRoom(chat *models.Chat) (int, string, error)
 	AddUserToChat(userId, chatId int) (string, error)
 	AddMessage(msg *models.Message) error
+	ChangeMessageSeen(messageId int) error
 	//GetRooms(userId int) ([]models.Chat, error)
 	//CheckUsers(users []int) (string, error)
 	//ConnectUsersToChat(users []int, chatId int) (string, error)
@@ -50,11 +52,17 @@ func (r *WebsRepository) CheckChat(chatId int) error {
 	return row.Scan(&selectedRow)
 }
 
+func (r *WebsRepository) CheckUser(userId int) error {
+	var selectedRow int
+	row := r.db.QueryRow("SELECT id FROM \"users\" WHERE id=$1", userId)
+	return row.Scan(&selectedRow)
+}
+
 func (r *WebsRepository) NewRoom(chat *models.Chat) (int, string, error) {
 	var chatId int
 
 	err := r.db.QueryRow("INSERT INTO \"chats\" (last_message_id, created_at, updated_at)"+
-		"VALUES ($1,$2,$3) RETURNING chat_id", chat.LastMessage, chat.CreatedAt, chat.UpdatedAt).Scan(&chatId)
+		"VALUES ($1,$2,$3) RETURNING chat_id", chat.LastMessageId, chat.CreatedAt, chat.UpdatedAt).Scan(&chatId)
 	if err != nil {
 		return 0, "couldn't add chat to 'chat' database", err
 	}
@@ -74,9 +82,9 @@ func (r *WebsRepository) AddUserToChat(userId, chatId int) (string, error) {
 }
 
 func (r *WebsRepository) AddMessage(msg *models.Message) error {
-	_, err := r.db.Exec("INSERT INTO \"messages\" (chat_id, text, sender_id, is_seen, created_at, updated_at)"+
-		"VALUES ($1,$2,$3,$4,$5,$6)", msg.ChatId, msg.Text,
-		msg.SenderId, msg.IsSeen, msg.CreatedAt, msg.UpdatedAt)
+	err := r.db.QueryRow("INSERT INTO \"messages\" (chat_id, text, sender_id, is_seen, created_at, updated_at)"+
+		"VALUES ($1,$2,$3,$4,$5,$6) RETURNING message_id", msg.ChatId, msg.Text,
+		msg.SenderId, msg.IsSeen, msg.CreatedAt, msg.UpdatedAt).Scan(&msg.MessageId)
 	if err != nil {
 		return err
 	}
@@ -94,6 +102,11 @@ func (r *WebsRepository) AddMessage(msg *models.Message) error {
 		}
 	}
 	return nil
+}
+
+func (r *WebsRepository) ChangeMessageSeen(messageId int) error {
+	_, err := r.db.Exec("UPDATE \"messages\" SET is_seen=true WHERE message_id=$1", messageId)
+	return err
 }
 
 //func (r *WebsRepository) GetRooms(userId int) ([]models.Chat, error) {

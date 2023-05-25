@@ -19,13 +19,13 @@ type Room struct {
 type Client struct {
 	Connection *websocket.Conn
 	Rooms      []*Room
-	Messages   chan []byte
+	Messages   chan Message
 }
 
 func NewClient(conn *websocket.Conn) *Client {
 	return &Client{Connection: conn,
 		Rooms:    make([]*Room, 0),
-		Messages: make(chan []byte),
+		Messages: make(chan Message),
 	}
 }
 

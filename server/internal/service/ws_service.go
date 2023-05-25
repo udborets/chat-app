@@ -12,6 +12,7 @@ import (
 
 type IWebsBLogic interface {
 	ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error)
+	CheckParams(userId, chatId int) (string, error)
 	ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) (int, string, error)
 	ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int)
 	WriteMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int)
@@ -57,11 +58,6 @@ func (b *WebsBLogic) ConnectToChats(mapOfRooms *models.RoomsMap, client *models.
 }
 
 func (b *WebsBLogic) ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, userId, chatId int) (int, string, error) {
-	err := b.websRepository.CheckChat(chatId)
-	if err != nil {
-		return http.StatusBadRequest, fmt.Sprintf("no chat with id: %d", chatId), err
-	}
-
 	msg, err := b.websRepository.AddUserToChat(userId, chatId)
 	if err != nil {
 		return http.StatusBadRequest, msg, err
@@ -82,6 +78,19 @@ func (b *WebsBLogic) ConnectToChat(mapOfRooms *models.RoomsMap, client *models.C
 	}
 
 	return http.StatusOK, "successfully connected", nil
+}
+
+func (b *WebsBLogic) CheckParams(userId, chatId int) (string, error) {
+	err := b.websRepository.CheckUser(userId)
+	if err != nil {
+		return fmt.Sprintf("no user with id: %d", userId), err
+	}
+
+	err = b.websRepository.CheckChat(chatId)
+	if err != nil {
+		return fmt.Sprintf("no chat with id: %d", chatId), err
+	}
+	return "", nil
 }
 
 func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) {
@@ -112,6 +121,7 @@ func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Cl
 			CreatedAt: time.Now().Unix(),
 			UpdatedAt: time.Now().Unix(),
 		}
+
 		err = b.websRepository.AddMessage(&newMessage)
 		if err != nil {
 			log.Fatal(err)
@@ -120,7 +130,7 @@ func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Cl
 
 		//fmt.Printf("sending message: %s to clients: %v\n", string(payload), room.Clients)
 		for chatter := range room.Clients {
-			chatter.Messages <- payload
+			chatter.Messages <- newMessage
 		}
 	}
 }
@@ -143,15 +153,20 @@ func (b *WebsBLogic) WriteMessages(mapOfRooms *models.RoomsMap, client *models.C
 				}
 				return
 			}
-			if err := client.Connection.WriteMessage(websocket.TextMessage, message); err != nil {
+			if err := client.Connection.WriteMessage(websocket.TextMessage, []byte(message.Text)); err != nil {
 				log.Printf("error on sending message: %v", err)
+			}
+
+			err := b.websRepository.ChangeMessageSeen(message.MessageId)
+			if err != nil {
+				log.Printf("error on changing is_seen value of message")
 			}
 		}
 	}
 }
 
 func (b *WebsBLogic) CreateRoom() (int, string, error) {
-	chat := &models.Chat{LastMessage: nil, UpdatedAt: time.Now().Unix(), CreatedAt: time.Now().Unix()}
+	chat := &models.Chat{LastMessageId: nil, UpdatedAt: time.Now().Unix(), CreatedAt: time.Now().Unix()}
 
 	chatId, msg, err := b.websRepository.NewRoom(chat)
 	if err != nil {
