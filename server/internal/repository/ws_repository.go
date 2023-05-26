@@ -89,17 +89,9 @@ func (r *WebsRepository) AddMessage(msg *models.Message) error {
 		return err
 	}
 
-	var lastMessageId interface{}
-	row := r.db.QueryRow("SELECT last_message_id FROM \"chats\" WHERE chat_id=$1", msg.ChatId)
-	if err := row.Scan(&lastMessageId); err != nil {
+	_, err = r.db.Exec("UPDATE \"chats\" SET last_message_id=$1 WHERE chat_id=$2", msg.MessageId, msg.ChatId)
+	if err != nil {
 		return err
-	}
-
-	if lastMessageId == nil {
-		_, err := r.db.Exec("UPDATE \"chats\" SET last_message_id=$1 WHERE chat_id=$2", msg.MessageId, msg.ChatId)
-		if err != nil {
-			return err
-		}
 	}
 	return nil
 }
