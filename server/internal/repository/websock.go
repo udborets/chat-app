@@ -13,9 +13,6 @@ type IWebsRepository interface {
 	AddUserToChat(userId, chatId int) (string, error)
 	AddMessage(msg *models.Message) error
 	ChangeMessageSeen(messageId int) error
-	//GetRooms(userId int) ([]models.Chat, error)
-	//CheckUsers(users []int) (string, error)
-	//ConnectUsersToChat(users []int, chatId int) (string, error)
 }
 
 type WebsRepository struct {
