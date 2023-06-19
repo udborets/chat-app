@@ -19,9 +19,6 @@ type IAuthDB interface {
 	CheckPassByEmail(email, pass string) (string, error)
 	CheckPassByPhone(email, pass string) (string, error)
 	GetInfoByUserId(userId int) (interface{}, error)
-	//GetUserByID(userId int) (interface{}, error)
-	//GetChatsByUserID(userId int) (interface{}, error)
-	//GetMessagesByChatsID(chatsId []int) (interface{}, error)
 }
 
 type AuthDB struct {
