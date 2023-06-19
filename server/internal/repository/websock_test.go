@@ -2,7 +2,7 @@ package repository
 
 import "testing"
 
-func TestWebsocketet_GetChats(t *testing.T) {
+func TestWebsocket_GetChats(t *testing.T) {
 
 }
 
