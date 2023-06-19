@@ -13,6 +13,8 @@ import (
 	"time"
 )
 
+//go:generate mockgen -source=auth_service.go -destination=mocks/auth_mock.go
+
 type IAuthBLogic interface {
 	SignUp(inp models.UserSignUpInput) (int, string, error)
 	SignIn(inp models.UserSignInInput) (int, string, error)

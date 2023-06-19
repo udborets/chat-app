@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+//go:generate mockgen -source=ws_service.go -destination=mocks/ws_mock.go
+
 type IWebsBLogic interface {
 	ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error)
 	CheckParams(userId, chatId int) (string, error)
@@ -17,9 +19,6 @@ type IWebsBLogic interface {
 	ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int)
 	WriteMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int)
 	CreateRoom() (int, string, error)
-	//GetChats(userId int) (int, string, error)
-	//GetRoomsByUserId(userId int) (interface{}, string, error)
-	//CreateRoom(users []int) (int, string, error)
 }
 
 type WebsBLogic struct {
