@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-//go:generate mockgen -source=auth_service.go -destination=mocks/auth_mock.go
+//go:generate mockgen -source=auth.go -destination=mocks/auth_mock.go
 
 type IAuthService interface {
 	SignUp(inp models.UserSignUpInput) (int, string, error)

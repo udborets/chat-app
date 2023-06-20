@@ -11,12 +11,12 @@ import (
 )
 
 type WebsHandler struct {
-	websBLogic service.IWebsBLogic
+	WebsService service.IWebsService
 }
 
 func NewWebsHandler() *WebsHandler {
 	return &WebsHandler{
-		websBLogic: service.NewWebsBLogic(),
+		WebsService: service.NewWebsService(),
 	}
 }
 
@@ -55,7 +55,7 @@ func (h *WebsHandler) connect(ctx *gin.Context) {
 	defer conn.Close()
 
 	client := models.NewClient(conn)
-	statusCode, msg, err := h.websBLogic.ConnectToChats(mapOfRooms, client, userId)
+	statusCode, msg, err := h.WebsService.ConnectToChats(mapOfRooms, client, userId)
 	if err != nil {
 		responses.NewResponse(ctx, statusCode, msg, err)
 		return
@@ -63,7 +63,7 @@ func (h *WebsHandler) connect(ctx *gin.Context) {
 }
 
 func (h *WebsHandler) newRoom(ctx *gin.Context) {
-	chatId, msg, err := h.websBLogic.CreateRoom()
+	chatId, msg, err := h.WebsService.CreateRoom()
 	if err != nil {
 		responses.NewResponse(ctx, http.StatusBadRequest, msg, err)
 		return
@@ -84,7 +84,7 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 		return
 	}
 
-	msg, err := h.websBLogic.CheckParams(userId, chatId)
+	msg, err := h.WebsService.CheckParams(userId, chatId)
 	if err != nil {
 		responses.NewResponse(ctx, http.StatusBadRequest, msg, err)
 	}
@@ -97,14 +97,14 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 	//defer conn.Close()
 
 	client := models.NewClient(conn)
-	statusCode, msg, err := h.websBLogic.ConnectToChat(mapOfRooms, client, userId, chatId)
+	statusCode, msg, err := h.WebsService.ConnectToChat(mapOfRooms, client, userId, chatId)
 	if err != nil {
 		responses.NewResponse(ctx, statusCode, msg, err)
 		return
 	}
 
-	go h.websBLogic.ReadMessages(mapOfRooms, client, chatId, userId)
-	go h.websBLogic.WriteMessages(mapOfRooms, client, chatId)
+	go h.WebsService.ReadMessages(mapOfRooms, client, chatId, userId)
+	go h.WebsService.WriteMessages(mapOfRooms, client, chatId)
 }
 
 //func (h *WebsHandler) newRoom(ctx *gin.Context) {
@@ -115,7 +115,7 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 //		return
 //	}
 //
-//	chatId, msg, err := h.websBLogic.CreateRoom(inp.Users)
+//	chatId, msg, err := h.WebsService.CreateRoom(inp.Users)
 //	if err != nil {
 //		responses.NewResponse(ctx, http.StatusBadRequest, msg, err)
 //		return
@@ -134,7 +134,7 @@ func (h *WebsHandler) joinRoom(ctx *gin.Context) { // ws://localhost:8080/ws/cha
 //		return
 //	}
 //
-//	rooms, msg, err := h.websBLogic.GetRoomsByUserId(userId)
+//	rooms, msg, err := h.WebsService.GetRoomsByUserId(userId)
 //	if err != nil {
 //		responses.NewResponse(ctx, http.StatusInternalServerError, msg, err)
 //	}

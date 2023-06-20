@@ -10,9 +10,9 @@ import (
 	"time"
 )
 
-//go:generate mockgen -source=ws_service.go -destination=mocks/ws_mock.go
+//go:generate mockgen -source=websock.go -destination=mocks/websock_mock.go
 
-type IWebsBLogic interface {
+type IWebsService interface {
 	ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error)
 	CheckParams(userId, chatId int) (string, error)
 	ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) (int, string, error)
@@ -21,17 +21,17 @@ type IWebsBLogic interface {
 	CreateRoom() (int, string, error)
 }
 
-type WebsBLogic struct {
+type WebsService struct {
 	websRepository repository.IWebsRepository
 }
 
-func NewWebsBLogic() *WebsBLogic {
-	return &WebsBLogic{
+func NewWebsService() *WebsService {
+	return &WebsService{
 		websRepository: repository.NewWebsRepository(),
 	}
 }
 
-func (b *WebsBLogic) ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error) {
+func (b *WebsService) ConnectToChats(mapOfRooms *models.RoomsMap, client *models.Client, userId int) (int, string, error) {
 	chats, err := b.websRepository.GetChats(userId)
 	if err != nil {
 		return http.StatusInternalServerError, "error on getting chats from database", err
@@ -56,7 +56,7 @@ func (b *WebsBLogic) ConnectToChats(mapOfRooms *models.RoomsMap, client *models.
 	return http.StatusOK, "successfully connected", nil
 }
 
-func (b *WebsBLogic) ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, userId, chatId int) (int, string, error) {
+func (b *WebsService) ConnectToChat(mapOfRooms *models.RoomsMap, client *models.Client, userId, chatId int) (int, string, error) {
 	msg, err := b.websRepository.AddUserToChat(userId, chatId)
 	if err != nil {
 		return http.StatusBadRequest, msg, err
@@ -79,7 +79,7 @@ func (b *WebsBLogic) ConnectToChat(mapOfRooms *models.RoomsMap, client *models.C
 	return http.StatusOK, "successfully connected", nil
 }
 
-func (b *WebsBLogic) CheckParams(userId, chatId int) (string, error) {
+func (b *WebsService) CheckParams(userId, chatId int) (string, error) {
 	err := b.websRepository.CheckUser(userId)
 	if err != nil {
 		return fmt.Sprintf("no user with id: %d", userId), err
@@ -92,7 +92,7 @@ func (b *WebsBLogic) CheckParams(userId, chatId int) (string, error) {
 	return "", nil
 }
 
-func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) {
+func (b *WebsService) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId, userId int) {
 	room := mapOfRooms.Rooms[chatId]
 	defer func() {
 		room.RemoveClient(client)
@@ -134,7 +134,7 @@ func (b *WebsBLogic) ReadMessages(mapOfRooms *models.RoomsMap, client *models.Cl
 	}
 }
 
-func (b *WebsBLogic) WriteMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int) {
+func (b *WebsService) WriteMessages(mapOfRooms *models.RoomsMap, client *models.Client, chatId int) {
 	room := mapOfRooms.Rooms[chatId]
 	defer func() {
 		room.RemoveClient(client)
@@ -164,7 +164,7 @@ func (b *WebsBLogic) WriteMessages(mapOfRooms *models.RoomsMap, client *models.C
 	}
 }
 
-func (b *WebsBLogic) CreateRoom() (int, string, error) {
+func (b *WebsService) CreateRoom() (int, string, error) {
 	chat := &models.Chat{LastMessageId: nil, UpdatedAt: time.Now().Unix(), CreatedAt: time.Now().Unix()}
 
 	chatId, msg, err := b.websRepository.NewRoom(chat)
@@ -174,7 +174,7 @@ func (b *WebsBLogic) CreateRoom() (int, string, error) {
 	return chatId, "", nil
 }
 
-//func (b *WebsBLogic) CreateRoom(usersId []int) (int, string, error) {
+//func (b *WebsService) CreateRoom(usersId []int) (int, string, error) {
 //	if len(usersId) < 2 {
 //		return http.StatusBadRequest, "not enough user id, minimum is 2", errors.New("not enough user id, minimum is 2")
 //	}
@@ -203,11 +203,11 @@ func (b *WebsBLogic) CreateRoom() (int, string, error) {
 //	return chatId, "successfully create new chat", nil
 //}
 
-//func (b *WebsBLogic) GetChats(userId int) (interface{}, int, string, error) {
+//func (b *WebsService) GetChats(userId int) (interface{}, int, string, error) {
 //
 //}
 
-//func (b *WebsBLogic) GetRoomsByUserId(userId int) (interface{}, string, error) {
+//func (b *WebsService) GetRoomsByUserId(userId int) (interface{}, string, error) {
 //	rooms, err := b.websRepository.GetRooms(userId)
 //	if err != nil {
 //		return nil, "couldn't get rooms by userId", err
