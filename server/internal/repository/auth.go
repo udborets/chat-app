@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-type IAuthDB interface {
+type IAuthRepository interface {
 	AddUser(user models.User) (string, error)
 	CheckUniqUser(user models.UserSignUpInput) (string, error)
 	CheckPassByName(name, pass string) (string, error)
@@ -21,15 +21,15 @@ type IAuthDB interface {
 	GetInfoByUserId(userId int) (interface{}, error)
 }
 
-type AuthDB struct {
+type AuthRepository struct {
 	db *sql.DB
 }
 
-func NewAuthDB() *AuthDB {
-	return &AuthDB{db: database}
+func NewAuthRepository() *AuthRepository {
+	return &AuthRepository{db: database}
 }
 
-func (a *AuthDB) AddUser(user models.User) (string, error) {
+func (a *AuthRepository) AddUser(user models.User) (string, error) {
 	var addedId int
 
 	err := a.db.QueryRow("insert into \"users\" (name, hash_password, email, phone, avatar_url, created_at, updated_at) "+
@@ -47,7 +47,7 @@ func (a *AuthDB) AddUser(user models.User) (string, error) {
 	return "", nil
 }
 
-func (a *AuthDB) CheckUniqUser(user models.UserSignUpInput) (string, error) {
+func (a *AuthRepository) CheckUniqUser(user models.UserSignUpInput) (string, error) {
 	var user_id int
 
 	if user.Name != "" {
@@ -76,7 +76,7 @@ func (a *AuthDB) CheckUniqUser(user models.UserSignUpInput) (string, error) {
 	return "", nil
 }
 
-func (a *AuthDB) CheckPassByEmail(email, pass string) (string, error) {
+func (a *AuthRepository) CheckPassByEmail(email, pass string) (string, error) {
 	row := a.db.QueryRow(`select hash_password, user_id from "auth" where email = $1`, email)
 
 	var corrPass string
@@ -99,7 +99,7 @@ func (a *AuthDB) CheckPassByEmail(email, pass string) (string, error) {
 	return token, nil
 }
 
-func (a *AuthDB) CheckPassByName(name, pass string) (string, error) {
+func (a *AuthRepository) CheckPassByName(name, pass string) (string, error) {
 	row := a.db.QueryRow(`select hash_password, user_id from "auth" where name = $1`, name)
 
 	var corrPass string
@@ -122,7 +122,7 @@ func (a *AuthDB) CheckPassByName(name, pass string) (string, error) {
 	return token, nil
 }
 
-func (a *AuthDB) CheckPassByPhone(phone, pass string) (string, error) {
+func (a *AuthRepository) CheckPassByPhone(phone, pass string) (string, error) {
 	row := a.db.QueryRow(`select hash_password, user_id from "auth" where phone = $1`, phone)
 
 	var corrPass string
@@ -158,7 +158,7 @@ func createJWTToken(userId int) (string, error) {
 	return tokenString, err
 }
 
-func (a *AuthDB) GetInfoByUserId(userId int) (interface{}, error) {
+func (a *AuthRepository) GetInfoByUserId(userId int) (interface{}, error) {
 	output := models.ValidateOutput{}
 	selectUser := a.db.QueryRow("select id, name, email, phone, avatar_url from \"users\" where id = $1", userId)
 

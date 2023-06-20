@@ -15,19 +15,19 @@ import (
 
 //go:generate mockgen -source=auth_service.go -destination=mocks/auth_mock.go
 
-type IAuthBLogic interface {
+type IAuthService interface {
 	SignUp(inp models.UserSignUpInput) (int, string, error)
 	SignIn(inp models.UserSignInInput) (int, string, error)
 	ParseJWTToken(stringToken string) (interface{}, int, string, error)
 }
 
-type AuthBLogic struct {
-	database repository.IAuthDB
+type AuthService struct {
+	database repository.IAuthRepository
 }
 
-func NewAuthBLogic() *AuthBLogic {
-	return &AuthBLogic{
-		database: repository.NewAuthDB(),
+func NewAuthService() *AuthService {
+	return &AuthService{
+		database: repository.NewAuthRepository(),
 	}
 }
 
@@ -38,7 +38,7 @@ var (
 	validPass  = regexp.MustCompile(`[\w*!@#$%^&?]{8,30}`)
 )
 
-func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
+func (b *AuthService) SignUp(inp models.UserSignUpInput) (int, string, error) {
 	if inp.Email == nil && inp.Phone == nil {
 		return http.StatusBadRequest, "no email and phone, at least one is required", errors.New("no email and phone, at least one is required")
 	}
@@ -82,7 +82,7 @@ func (b *AuthBLogic) SignUp(inp models.UserSignUpInput) (int, string, error) {
 	return http.StatusOK, "successful signup", errors.New("successful signup")
 }
 
-func (b *AuthBLogic) SignIn(inp models.UserSignInInput) (int, string, error) {
+func (b *AuthService) SignIn(inp models.UserSignInInput) (int, string, error) {
 	var jwtToken string
 	if inp.Email != nil && validEmail.MatchString(inp.Email.(string)) {
 		msg, err := b.database.CheckPassByEmail(inp.Email.(string), inp.Password)
@@ -109,7 +109,7 @@ func (b *AuthBLogic) SignIn(inp models.UserSignInInput) (int, string, error) {
 	return http.StatusOK, jwtToken, nil
 }
 
-func (b *AuthBLogic) ParseJWTToken(tokenString string) (interface{}, int, string, error) {
+func (b *AuthService) ParseJWTToken(tokenString string) (interface{}, int, string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

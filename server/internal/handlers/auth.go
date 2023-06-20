@@ -8,17 +8,17 @@ import (
 	"net/http"
 )
 
-type AuthHTTP struct {
-	authBLogic service.IAuthBLogic
+type AuthHandler struct {
+	authService service.IAuthService
 }
 
-func NewHTTP() *AuthHTTP {
-	return &AuthHTTP{
-		authBLogic: service.NewAuthBLogic(),
+func NewHTTP() *AuthHandler {
+	return &AuthHandler{
+		authService: service.NewAuthService(),
 	}
 }
 
-func (h *AuthHTTP) InitRoutes(router *gin.Engine) {
+func (h *AuthHandler) InitRoutes(router *gin.Engine) {
 	authAPI := router.Group("/auth")
 
 	authAPI.POST("/signup", h.userSignUp)
@@ -26,7 +26,7 @@ func (h *AuthHTTP) InitRoutes(router *gin.Engine) {
 	authAPI.GET("/validate", h.requireAuth, h.validate)
 }
 
-func (h *AuthHTTP) userSignUp(ctx *gin.Context) {
+func (h *AuthHandler) userSignUp(ctx *gin.Context) {
 	var inp models.UserSignUpInput
 
 	if err := ctx.BindJSON(&inp); err != nil {
@@ -34,11 +34,11 @@ func (h *AuthHTTP) userSignUp(ctx *gin.Context) {
 		return
 	}
 
-	statusCode, msg, err := h.authBLogic.SignUp(inp)
+	statusCode, msg, err := h.authService.SignUp(inp)
 	responses.NewResponse(ctx, statusCode, msg, err)
 }
 
-func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
+func (h *AuthHandler) userSignIn(ctx *gin.Context) {
 	var inp models.UserSignInInput
 
 	if err := ctx.BindJSON(&inp); err != nil {
@@ -46,7 +46,7 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 		return
 	}
 
-	statusCode, msg, err := h.authBLogic.SignIn(inp)
+	statusCode, msg, err := h.authService.SignIn(inp)
 	if err != nil {
 		responses.NewResponse(ctx, statusCode, msg, err)
 		return
@@ -58,14 +58,14 @@ func (h *AuthHTTP) userSignIn(ctx *gin.Context) {
 	ctx.Redirect(http.StatusMovedPermanently, "http://localhost/auth/validate")
 }
 
-func (h *AuthHTTP) requireAuth(ctx *gin.Context) {
+func (h *AuthHandler) requireAuth(ctx *gin.Context) {
 	tokenString, err := ctx.Cookie("Authorization")
 	if err != nil {
 		responses.NewResponse(ctx, http.StatusUnauthorized, "Please login to chat or sign in if you first time here)", err)
 		return
 	}
 
-	output, statusCode, msg, err := h.authBLogic.ParseJWTToken(tokenString)
+	output, statusCode, msg, err := h.authService.ParseJWTToken(tokenString)
 	if err != nil {
 		responses.NewResponse(ctx, statusCode, msg, err)
 		return
@@ -75,7 +75,7 @@ func (h *AuthHTTP) requireAuth(ctx *gin.Context) {
 	ctx.Next()
 }
 
-func (h *AuthHTTP) validate(ctx *gin.Context) {
+func (h *AuthHandler) validate(ctx *gin.Context) {
 	output, _ := ctx.Get("output")
 	ctx.JSON(http.StatusOK, output)
 }
